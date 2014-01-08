@@ -3,6 +3,6 @@
   "description": "Factories for Meteor",
   "homepage": "https://github.com/percolatestudio/meteor-factory",
   "author": "David Burles (https://github.com/dburles), Tom Coleman (https://github.com/tmeasday)",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "git": "https://github.com/percolatestudio/meteor-factory.git"
 }
