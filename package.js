@@ -3,6 +3,7 @@ Package.describe({
 });
 
 Package.on_use(function(api) {
+  api.use(['underscore', 'ejson']);
   api.add_files('lib/factory.js', ['client', 'server']);
   if (typeof api.export !== 'undefined') {
     api.export('Factory', ['client', 'server']);
