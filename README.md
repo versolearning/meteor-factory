@@ -68,6 +68,8 @@ Creates (inserts) this factory into mongodb
 - doc (Optional)
   - Document object
 
-## License
+## License 
 
-MIT
+MIT. (c) Percolate Studio
+
+factory was developed as part of the [Verso](http://versoapp.com) project.
