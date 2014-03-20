@@ -21,6 +21,11 @@ Factory.define('book', Books, {
   name: 'A book',
   year: function() { return _.random(1900, 2014); }
 });
+
+// We can also extend from an existing factory
+Factory.define('anotherBook', Books, Factory.extend('book', {
+  // ...
+}));
 ```
 
 ### Creating documents
@@ -62,6 +67,15 @@ Builds the data structure for this factory
 #### Factory('*myFactory*').create(*doc*)
 
 Creates (inserts) this factory into mongodb
+
+- myFactory
+  - The name defined for this factory
+- doc (Optional)
+  - Document object
+
+#### Factory('*myFactory*').extend(*doc*)
+
+Extend from an existing factory
 
 - myFactory
   - The name defined for this factory
