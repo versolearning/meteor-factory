@@ -1,6 +1,6 @@
 # meteor-factory
 
-A simple factory package that simplifies the creation of data for tests or generating fixtures.
+A factory package that simplifies the creation of data for tests or for generating fixtures.
 
 ## Examples
 
@@ -10,14 +10,14 @@ A simple factory package that simplifies the creation of data for tests or gener
 Authors = new Meteor.Collection('authors');
 Books = new Meteor.Collection('books');
 
-Factories.author = new Factory(Authors, {
+Factory.define('author', Authors, {
   name: 'John Smith'
 }).after(function(author) {
   // Do something smart
 });
 
-Factories.book = new Factory(Books, {
-  authorId: function() { return Factories.author.create()._id; },
+Factory.define('book', Books, {
+  authorId: Factory.get('author'),
   name: 'A book',
   year: function() { return _.random(1900, 2014); }
 });
@@ -27,15 +27,15 @@ Factories.book = new Factory(Books, {
 
 ```javascript
 // Inserts a new book into the books collection
-var book = Factories.book.create();
+var book = Factory('book').create();
 
 // New fields can be added or overwritten
-var book = Factories.book.create({ name: 'A better book' });
+var book = Factory('book').create({ name: 'A better book' });
 ```
 
 ## API
 
-#### Factories.*myFactory* = new Factory(*Collection*, *doc*)*.after(function(doc) { ... })*
+#### Factory.define('*myFactory*', *Collection*, *doc*)*.after(function(doc) { ... })*
 
 - myFactory
   - A name for this factory
@@ -46,14 +46,28 @@ var book = Factories.book.create({ name: 'A better book' });
 - *.after* hook (Optional)
   - Returns the newly inserted document
 
-#### Factories.*myFactory*.create(*doc*)
+#### Factory('*myFactory*').get()
+
+Returns the instance of *myFactory*
+
+#### Factory('*myFactory*').build(*doc*)
+
+Builds the data structure for this factory
 
 - myFactory
   - The name defined for this factory
 - doc (Optional)
   - Document object
 
-## Future
+#### Factory('*myFactory*').create(*doc*)
 
-This package is very much a work in progress, some planned features are
-  - Better way to define relations
+Creates (inserts) this factory into mongodb
+
+- myFactory
+  - The name defined for this factory
+- doc (Optional)
+  - Document object
+
+## License
+
+MIT
