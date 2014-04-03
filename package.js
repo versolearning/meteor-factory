@@ -6,7 +6,6 @@ Package.on_use(function(api) {
   api.use(['minimongo', 'underscore', 'ejson']);
   api.add_files('lib/factory.js', ['client', 'server']);
   api.export('Factory', ['client', 'server']);
-  api.export('Factories', ['client', 'server']);
 });
 
 Package.on_test(function(api) {
