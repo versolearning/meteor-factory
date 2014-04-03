@@ -32,10 +32,10 @@ Factory.define('anotherBook', Books, Factory.extend('book', {
 
 ```javascript
 // Inserts a new book into the books collection
-var book = Factory('book').create();
+var book = Factory.create('book');
 
 // New fields can be added or overwritten
-var book = Factory('book').create({ name: 'A better book' });
+var book = Factory.create('book', { name: 'A better book' });
 ```
 
 ## API
@@ -51,11 +51,11 @@ var book = Factory('book').create({ name: 'A better book' });
 - *.after* hook (Optional)
   - Returns the newly inserted document
 
-#### Factory('*myFactory*').get()
+#### Factory.get('*myFactory*')
 
 Returns the instance of *myFactory*
 
-#### Factory('*myFactory*').build(*doc*)
+#### Factory.build('*myFactory*', *doc*)
 
 Builds the data structure for this factory
 
@@ -64,7 +64,7 @@ Builds the data structure for this factory
 - doc (Optional)
   - Document object
 
-#### Factory('*myFactory*').create(*doc*)
+#### Factory.create('*myFactory*', *doc*)
 
 Creates (inserts) this factory into mongodb
 
@@ -73,7 +73,7 @@ Creates (inserts) this factory into mongodb
 - doc (Optional)
   - Document object
 
-#### Factory('*myFactory*').extend(*doc*)
+#### Factory.extend('*myFactory*', *doc*)
 
 Extend from an existing factory
 
