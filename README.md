@@ -82,6 +82,10 @@ Extend from an existing factory
 - doc (Optional)
   - Document object
 
+## More
+
+**Fake** makes a great companion package. See http://atmospherejs.com/package/fake
+
 ## License 
 
 MIT. (c) Percolate Studio
