@@ -1,6 +1,6 @@
 # meteor-factory
 
-A factory package that simplifies the creation of data for tests or for generating fixtures.
+A package for creating test data or for generating fixtures.
 
 ## Examples
 
