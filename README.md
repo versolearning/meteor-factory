@@ -40,9 +40,9 @@ var book = Factory.create('book', { name: 'A better book' });
 
 ## API
 
-#### Factory.define('*myFactory*', *Collection*, *doc*)*.after(function(doc) { ... })*
+#### Factory.define('*name*', *Collection*, *doc*)*.after(function(doc) { ... })*
 
-- myFactory
+- name
   - A name for this factory
 - Collection
   - A meteor collection
@@ -51,40 +51,40 @@ var book = Factory.create('book', { name: 'A better book' });
 - *.after* hook (Optional)
   - Returns the newly inserted document
 
-#### Factory.get('*myFactory*')
+#### Factory.get('*name*')
 
-Returns the instance of *myFactory*
+Returns the instance of *name*
 
-#### Factory.build('*myFactory*', *doc*)
+#### Factory.build('*name*', *doc*)
 
 Builds the data structure for this factory
 
-- myFactory
+- name
   - The name defined for this factory
 - doc (Optional)
   - Document object
 
-#### Factory.create('*myFactory*', *doc*)
+#### Factory.create('*name*', *doc*)
 
 Creates (inserts) this factory into mongodb
 
-- myFactory
+- name
   - The name defined for this factory
 - doc (Optional)
   - Document object
 
-#### Factory.extend('*myFactory*', *doc*)
+#### Factory.extend('*name*', *doc*)
 
 Extend from an existing factory
 
-- myFactory
+- name
   - The name defined for this factory
 - doc (Optional)
   - Document object
 
 ## More
 
-**Fake** makes a great companion package. See http://atmospherejs.com/package/fake
+**Fake** makes a great companion package. See https://atmospherejs.com/anti/fake
 
 ## License 
 
