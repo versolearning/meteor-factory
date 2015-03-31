@@ -1,7 +1,7 @@
 Package.describe({
   name: 'dburles:factory',
   summary: 'Factories for Meteor',
-  version: "0.3.8",
+  version: "0.3.9",
   git: "https://github.com/percolatestudio/meteor-factory.git"
 });
 
