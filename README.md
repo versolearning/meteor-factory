@@ -53,7 +53,9 @@ var book = Factory.create('book', { name: 'A better book' });
 
 #### Factory.get('*name*')
 
-Returns the instance of *name*
+Returns the instance of *name*. Typical usage is to specify a relationship between collections as seen in the Book example above.
+
+When calling `Factory.create('book')` both the Book *and* an Author are created. The newly created Author `_id` will then be automatically assigned to that field. In the case of calling `Factory.build('book')` as no insert operations are run, the `_id` will be faked.
 
 #### Factory.build('*name*', *doc*)
 
