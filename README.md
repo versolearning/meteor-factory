@@ -2,6 +2,8 @@
 
 A package for creating test data or for generating fixtures.
 
+Install at the command line using: `meteor add dburles:factory` (via [atmospherejs](https://atmospherejs.com/dburles/factory))
+
 ## Examples
 
 ### Defining factories
