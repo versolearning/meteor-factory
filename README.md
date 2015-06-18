@@ -1,6 +1,12 @@
-# meteor-factory
+# Meteor Factory
 
 A package for creating test data or for generating fixtures.
+
+## Installation
+
+```sh
+$ meteor add dburles:factory
+```
 
 ## Examples
 
