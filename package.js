@@ -7,7 +7,14 @@ Package.describe({
 
 Package.on_use(function(api) {
   api.versionsFrom("METEOR@0.9.0");
-  api.use(['minimongo', 'underscore', 'ejson', 'aldeed:simple-schema', 'safe']);
+  api.use([
+    'minimongo',
+    'underscore',
+    'ejson',
+    'aldeed:simple-schema',
+    'safe',
+    'random',
+    'underscore']);
   api.add_files('lib/factory.js', ['client', 'server']);
   api.export('Factory', ['client', 'server']);
 });
