@@ -4,7 +4,7 @@
 Authors = new Meteor.Collection('authors');
 Books = new Meteor.Collection('books');
 
-Tinytest.add("Factory - Build - Basic build works", function(test) {
+Tinytest.add("Factory - Build - Basic build works", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -12,23 +12,19 @@ Tinytest.add("Factory - Build - Basic build works", function(test) {
   test.equal(Factory.build('author').name, "John Smith");
 });
 
-Tinytest.add("Factory - Define - After hook", function(test) {
-  var result;
-
+Tinytest.add("Factory - Define - After hook", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
-  }).after(function(doc) {
-    result = doc;
+  }).after(doc => {
+    var author = Factory.create('author');
+    test.equal(author.name, "John Smith");
+    test.equal(doc.name, "John Smith");
   });
-
-  var author = Factory.create("author");
-  test.equal(author.name, "John Smith");
-  test.equal(result.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Functions - Basic", function(test) {
+Tinytest.add("Factory - Build - Functions - Basic", test => {
   Factory.define('author', Authors, {
-    name: function() {
+    name() {
       return "John Smith";
     }
   });
@@ -36,10 +32,10 @@ Tinytest.add("Factory - Build - Functions - Basic", function(test) {
   test.equal(Factory.build('author').name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Functions - Context", function(test) {
+Tinytest.add("Factory - Build - Functions - Context", test => {
   Factory.define('author', Authors, {
     test: "John Smith",
-    name: function() {
+    name() {
       return this.test;
     }
   });
@@ -47,7 +43,7 @@ Tinytest.add("Factory - Build - Functions - Context", function(test) {
   test.equal(Factory.build('author').name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Dotted properties - Basic", function(test) {
+Tinytest.add("Factory - Build - Dotted properties - Basic", test => {
   Factory.define('author', Authors, {
     "profile.name": "John Smith"
   });
@@ -55,10 +51,10 @@ Tinytest.add("Factory - Build - Dotted properties - Basic", function(test) {
   test.equal(Factory.build('author').profile.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Dotted properties - Context", function(test) {
+Tinytest.add("Factory - Build - Dotted properties - Context", test => {
   Factory.define('author', Authors, {
     name: "John Smith",
-    'profile.name': function() {
+    'profile.name'() {
       return this.name;
     }
   });
@@ -66,7 +62,7 @@ Tinytest.add("Factory - Build - Dotted properties - Context", function(test) {
   test.equal(Factory.build('author').profile.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Deep objects", function(test) {
+Tinytest.add("Factory - Build - Deep objects", test => {
   Factory.define('author', Authors, {
     profile: {
       name: "John Smith"
@@ -76,10 +72,10 @@ Tinytest.add("Factory - Build - Deep objects", function(test) {
   test.equal(Factory.build('author').profile.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Functions - Deep object - Basic", function(test) {
+Tinytest.add("Factory - Build - Functions - Deep object - Basic", test => {
   Factory.define('author', Authors, {
     profile: {
-      name: function() {
+      name() {
         return "John Smith";
       }
     }
@@ -88,11 +84,11 @@ Tinytest.add("Factory - Build - Functions - Deep object - Basic", function(test)
   test.equal(Factory.build('author').profile.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Functions - Deep object - Context", function(test) {
+Tinytest.add("Factory - Build - Functions - Deep object - Context", test => {
   Factory.define('author', Authors, {
     name: "John Smith",
     profile: {
-      name: function() {
+      name() {
         return this.name;
       }
     }
@@ -101,7 +97,7 @@ Tinytest.add("Factory - Build - Functions - Deep object - Context", function(tes
   test.equal(Factory.build('author').profile.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Extend - Basic", function(test) {
+Tinytest.add("Factory - Build - Extend - Basic", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -111,7 +107,7 @@ Tinytest.add("Factory - Build - Extend - Basic", function(test) {
   test.equal(Factory.build('authorOne').name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Extend - With attributes", function(test) {
+Tinytest.add("Factory - Build - Extend - With attributes", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -124,7 +120,7 @@ Tinytest.add("Factory - Build - Extend - With attributes", function(test) {
   test.equal(Factory.build('authorOne').test, "testing!");
 });
 
-Tinytest.add("Factory - Build - Extend - With attributes (check that we don't modify the parent)", function(test) {
+Tinytest.add("Factory - Build - Extend - With attributes (check that we don't modify the parent)", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -141,7 +137,7 @@ Tinytest.add("Factory - Build - Extend - With attributes (check that we don't mo
   test.equal(_.isUndefined(author.test), true);
 });
 
-Tinytest.add("Factory - Build - Extend - Parent with relationship", function(test) {
+Tinytest.add("Factory - Build - Extend - Parent with relationship", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -154,12 +150,12 @@ Tinytest.add("Factory - Build - Extend - Parent with relationship", function(tes
 
   Factory.define('bookOne', Books, Factory.extend('book'));
 
-  var bookOne = Factory.create("bookOne");
+  var bookOne = Factory.create('bookOne');
 
   test.equal(bookOne.name, "A book");
 });
 
-Tinytest.add("Factory - Build - Extend - Parent with relationship - Extra attributes", function(test) {
+Tinytest.add("Factory - Build - Extend - Parent with relationship - Extra attributes", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -174,24 +170,24 @@ Tinytest.add("Factory - Build - Extend - Parent with relationship - Extra attrib
     name: "A better book"
   }));
 
-  var bookOne = Factory.create("bookOne");
+  var bookOne = Factory.create('bookOne');
 
   test.equal(bookOne.name, "A better book");
   // same year as parent
   test.equal(bookOne.year, 2014);
 });
 
-Tinytest.add("Factory - Create - Basic", function(test) {
+Tinytest.add("Factory - Create - Basic", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
 
-  var author = Factory.create("author");
+  var author = Factory.create('author');
 
   test.equal(author.name, "John Smith");
 });
 
-Tinytest.add("Factory - Create - Relationship", function(test) {
+Tinytest.add("Factory - Create - Relationship", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -202,55 +198,55 @@ Tinytest.add("Factory - Create - Relationship", function(test) {
     year: 2014
   });
 
-  var book = Factory.create("book");
+  var book = Factory.create('book');
 
   test.equal(Authors.findOne(book.authorId).name, "John Smith");
 });
 
-Tinytest.add("Factory - Create - Relationship - return a Factory from function", function(test) {
+Tinytest.add("Factory - Create - Relationship - return a Factory from function", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
 
   Factory.define('book', Books, {
-    authorId: function() {
+    authorId() {
       return Factory.get('author');
     },
     name: "A book",
     year: 2014
   });
 
-  var book = Factory.create("book");
+  var book = Factory.create('book');
 
   test.equal(Authors.findOne(book.authorId).name, "John Smith");
 });
 
-Tinytest.add("Factory - Create - Relationship - return a Factory from deep function (dotted)", function(test) {
+Tinytest.add("Factory - Create - Relationship - return a Factory from deep function (dotted)", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
 
   Factory.define('book', Books, {
-    'good.authorId': function() {
+    'good.authorId'() {
       return Factory.get('author');
     },
     name: "A book",
     year: 2014
   });
 
-  var book = Factory.create("book");
+  var book = Factory.create('book');
 
   test.equal(Authors.findOne(book.good.authorId).name, "John Smith");
 });
 
-Tinytest.add("Factory - Create - Relationship - return a Factory from deep function", function(test) {
+Tinytest.add("Factory - Create - Relationship - return a Factory from deep function", test => {
   Factory.define('author', Authors, {
     name: "John Smith"
   });
 
   Factory.define('book', Books, {
     good: {
-      authorId: function() {
+      authorId() {
         return Factory.get('author');
       }
     },
@@ -258,18 +254,16 @@ Tinytest.add("Factory - Create - Relationship - return a Factory from deep funct
     year: 2014
   });
 
-  var book = Factory.create("book");
+  var book = Factory.create('book');
 
   test.equal(Authors.findOne(book.good.authorId).name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Sequence", function(test) {
+Tinytest.add("Factory - Build - Sequence", test => {
   Factory.define('author', Authors, {
     name: "John Smith",
-    email: function(factory) {
-      return factory.sequence(function(n) {
-        return 'person' + n + '@example.com';
-      });
+    email(factory) {
+      return factory.sequence(n => 'person' + n + '@example.com');
     }
   });
 
@@ -279,24 +273,22 @@ Tinytest.add("Factory - Build - Sequence", function(test) {
   test.equal(author2.email, "person2@example.com");
 });
 
-Tinytest.add("Factory - Create - Sequence", function(test) {
+Tinytest.add("Factory - Create - Sequence", test => {
   Authors.remove({});
 
   Factory.define('author', Authors, {
     name: "John Smith",
-    email: function(factory) {
-      return factory.sequence(function(n) {
-        return 'person' + n + '@example.com';
-      });
+    email(factory) {
+      return factory.sequence(n => 'person' + n + '@example.com');
     }
   });
 
-  var author = Factory.create("author");
+  var author = Factory.create('author');
   test.equal(author.email, "person1@example.com");
   var foundAuthor = Authors.find({email: "person1@example.com"}).count();
   test.equal(foundAuthor, 1);
 
-  var author2 = Factory.create("author");
+  var author2 = Factory.create('author');
   test.equal(author2.email, "person2@example.com");
   var foundAuthor2 = Authors.find({email: "person2@example.com"}).count();
   test.equal(foundAuthor2, 1);
