@@ -19,6 +19,11 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
-  api.use(['tinytest', 'dburles:factory', 'underscore']);
+  api.use([
+    'ecmascript',
+    'tinytest',
+    'dburles:factory',
+    'underscore'
+  ]);
   api.add_files('factory_tests.js', 'server');
 });
