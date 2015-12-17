@@ -5,14 +5,20 @@ Package.describe({
   git: 'https://github.com/versolearning/meteor-factory.git'
 });
 
-Package.on_use(function(api) {
-  api.versionsFrom('METEOR@0.9.0');
-  api.use(['minimongo', 'underscore', 'ejson', 'random']);
+Package.onUse(function(api) {
+  api.versionsFrom('1.2');
+  api.use([
+    'ecmascript',
+    'minimongo',
+    'underscore',
+    'ejson',
+    'random'
+  ]);
   api.add_files('factory.js');
   api.export('Factory');
 });
 
-Package.on_test(function(api) {
+Package.onTest(function(api) {
   api.use(['tinytest', 'dburles:factory', 'underscore']);
   api.add_files('factory_tests.js', 'server');
 });
