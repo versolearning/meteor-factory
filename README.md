@@ -18,14 +18,14 @@ Books = new Meteor.Collection('books');
 
 Factory.define('author', Authors, {
   name: 'John Smith'
-}).after(function(author) {
+}).after(author => {
   // Do something smart
 });
 
 Factory.define('book', Books, {
   authorId: Factory.get('author'),
   name: 'A book',
-  year: function() { return _.random(1900, 2014); }
+  year() { return _.random(1900, 2014); }
 });
 
 // We can also extend from an existing factory
@@ -46,7 +46,7 @@ var book = Factory.create('book', { name: 'A better book' });
 
 ## API
 
-#### Factory.define('*name*', *Collection*, *doc*)*.after(function(doc) { ... })*
+#### Factory.define('*name*', *Collection*, *doc*)*.after(doc => { ... })*
 
 - name
   - A name for this factory
