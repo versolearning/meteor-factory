@@ -36,7 +36,7 @@ Factory.build = (name, attributes = {}, options = {}) => {
   const result = {};
 
   // "raw" attributes without functions evaluated, or dotted properties resolved
-  extendedAttributes = _.extend({}, factory.attributes, attributes);
+  const extendedAttributes = _.extend({}, factory.attributes, attributes);
 
   // either create a new factory and return its _id
   // or return a 'fake' _id (since we're not inserting anything)
