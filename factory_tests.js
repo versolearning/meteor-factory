@@ -293,3 +293,34 @@ Tinytest.add("Factory - Create - Sequence", test => {
   var foundAuthor2 = Authors.find({email: "person2@example.com"}).count();
   test.equal(foundAuthor2, 1);
 });
+
+Tinytest.add("Factory - Build - Array with Factory", test => {
+  Factory.define('author', Authors, {
+    name: "John Smith"
+  });
+
+  Factory.define('book', Books, {
+    authorIds: [Factory.get('author'), 'PXm6dye7A8vgoB7uY']
+  });
+
+  const book = Factory.build('book');
+
+  test.length(book.authorIds, 2);
+  test.length(book.authorIds[0], 17);
+});
+
+Tinytest.add("Factory - Build - Array with function returning a Factory", test => {
+  Factory.define('author', Authors, {
+    name: "John Smith"
+  });
+
+  Factory.define('book', Books, {
+    authorIds: [() => Factory.get('author'), 'PXm6dye7A8vgoB7uY']
+  });
+
+  const book = Factory.build('book');
+
+  test.length(book.authorIds, 2);
+  test.length(book.authorIds[0], 17);
+});
+

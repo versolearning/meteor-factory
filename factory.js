@@ -48,6 +48,11 @@ Factory.build = (name, attributes = {}, options = {}) => {
     return Random.id();
   };
 
+  // apply this to functions on the factory
+  const api = {
+    sequence: fn => fn(factory.sequence)
+  };
+
   factory.sequence += 1;
 
   const walk = (record, object) => {
@@ -56,10 +61,16 @@ Factory.build = (name, attributes = {}, options = {}) => {
       // is this a Factory instance?
       if (value instanceof Factory) {
         newValue = makeRelation(value.name);
-      } else if (_.isFunction(value)) {
-        const fnRes = value.call(result, {
-          sequence: fn => fn(factory.sequence)
+      } else if (_.isArray(value)) {
+        newValue = value.map(element => {
+          if (_.isFunction(element)) {
+            const fnRes = element.call(result, api);
+            return (fnRes instanceof Factory) ? makeRelation(fnRes.name) : fnRes;
+          }
+          return (element instanceof Factory) ? makeRelation(element.name) : element;
         });
+      } else if (_.isFunction(value)) {
+        const fnRes = value.call(result, api);
         // does executing this function return a Factory instance?
         newValue = (fnRes instanceof Factory) ? makeRelation(fnRes.name) : fnRes;
       // if an object literal is passed in, traverse deeper into it
