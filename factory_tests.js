@@ -324,3 +324,23 @@ Tinytest.add("Factory - Build - Array with function returning a Factory", test =
   test.length(book.authorIds[0], 17);
 });
 
+Tinytest.add("Factory - Build - Array with an object", test => {
+  Factory.define('book', Books, {
+    array: [{objectInArray: true}]
+  });
+
+  const book = Factory.build('book');
+
+  test.isTrue(book.array[0].objectInArray);
+});
+
+// Could possibly make this a feature:
+// Tinytest.add("Factory - Build - Array with an object containing a function", test => {
+//   Factory.define('book', Books, {
+//     array: [{objectInArrayWithFn: () => true}]
+//   });
+
+//   const book = Factory.build('book');
+
+//   test.equal(book.array[0].objectInArrayWithFn, true);
+// });
