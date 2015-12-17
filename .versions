@@ -7,7 +7,7 @@ blaze-tools@1.0.4
 boilerplate-generator@1.0.4
 callback-hook@1.0.4
 check@1.1.0
-dburles:factory@0.4.0
+dburles:factory@0.4.1
 ddp@1.2.2
 ddp-client@1.2.1
 ddp-common@1.2.2
@@ -22,7 +22,7 @@ html-tools@1.0.5
 htmljs@1.0.5
 id-map@1.0.4
 jquery@1.11.4
-local-test:dburles:factory@0.4.0
+local-test:dburles:factory@0.4.1
 logging@1.0.8
 meteor@1.1.10
 minimongo@1.0.10
