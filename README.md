@@ -96,7 +96,7 @@ Builds the data structure for this factory
 
 `Factory.tree('*name*', *doc*)`
 
-Builds an object tree without _id fields. Useful for generating data for templates or passing to mutator methods.
+Builds an object tree without `_id` fields. Useful for generating data for templates or passing to mutator methods.
 
 - name
   - The name define for this factory
