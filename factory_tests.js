@@ -344,3 +344,18 @@ Tinytest.add("Factory - Build - Array with an object", test => {
 
 //   test.equal(book.array[0].objectInArrayWithFn, true);
 // });
+
+Tinytest.add("Factory - Tree - Basic", test => {
+  Factory.define('author', Authors, {
+    name: "John Smith"
+  });
+
+  Factory.define('book', Books, {
+    name: "A book",
+    author: Factory.get('author')
+  });
+
+  const book = Factory.tree('book');
+
+  test.equal(book.author.name, "John Smith");
+});

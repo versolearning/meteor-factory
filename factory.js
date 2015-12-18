@@ -44,6 +44,9 @@ Factory.build = (name, attributes = {}, options = {}) => {
     if (options.insert) {
       return Factory.create(relName)._id;
     }
+    if (options.tree) {
+      return Factory.build(relName, {}, {tree: true});
+    }
     // fake an id on build
     return Random.id();
   };
@@ -95,8 +98,14 @@ Factory.build = (name, attributes = {}, options = {}) => {
 
   walk(result, extendedAttributes);
 
-  result._id = extendedAttributes._id || Random.id();
+  if (! options.tree) {
+    result._id = extendedAttributes._id || Random.id();
+  }
   return result;
+};
+
+Factory.tree = (name, attributes) => {
+  return Factory.build(name, attributes, {tree: true});
 };
 
 Factory._create = (name, doc) => {
