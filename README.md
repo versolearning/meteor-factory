@@ -8,6 +8,20 @@ A package for creating test data or for generating fixtures.
 $ meteor add dburles:factory
 ```
 
+## Table of Contents
+
+- [Examples](https://github.com/versolearning/meteor-factory#examples)
+  - [Defining factories](https://github.com/versolearning/meteor-factory#defining-factories)
+  - [Creating documents](https://github.com/versolearning/meteor-factory#creating-documents)
+- [API](https://github.com/versolearning/meteor-factory#api)
+  - [define](https://github.com/versolearning/meteor-factory#define)
+  - [get](https://github.com/versolearning/meteor-factory#get)
+  - [build](https://github.com/versolearning/meteor-factory#build)
+  - [tree](https://github.com/versolearning/meteor-factory#tree)
+  - [create](https://github.com/versolearning/meteor-factory#create)
+  - [extend](https://github.com/versolearning/meteor-factory#extend)
+- [Other](https://github.com/versolearning/meteor-factory#)
+
 ## Examples
 
 ### Defining factories
@@ -46,7 +60,11 @@ var book = Factory.create('book', { name: 'A better book' });
 
 ## API
 
-#### Factory.define('*name*', *Collection*, *doc*)*.after(doc => { ... })*
+Note: When calling `Factory.create('book')` both the Book *and* an Author are created. The newly created Author `_id` will then be automatically assigned to that field. In the case of calling `Factory.build('book')` as no insert operations are run, the `_id` will be faked.
+
+### define
+
+`Factory.define('*name*', *Collection*, *doc*)*.after(doc => { ... })*`
 
 - name
   - A name for this factory
@@ -55,15 +73,17 @@ var book = Factory.create('book', { name: 'A better book' });
 - doc
   - Document object
 - *.after* hook (Optional)
-  - Returns the newly inserted document
+  - Returns the newly inserted document after calling `Factory.create`
 
-#### Factory.get('*name*')
+### get
+
+`Factory.get('*name*')`
 
 Returns the instance of *name*. Typical usage is to specify a relationship between collections as seen in the Book example above.
 
-When calling `Factory.create('book')` both the Book *and* an Author are created. The newly created Author `_id` will then be automatically assigned to that field. In the case of calling `Factory.build('book')` as no insert operations are run, the `_id` will be faked.
+### build
 
-#### Factory.build('*name*', *doc*)
+`Factory.build('*name*', *doc*)`
 
 Builds the data structure for this factory
 
@@ -72,7 +92,41 @@ Builds the data structure for this factory
 - doc (Optional)
   - Document object
 
-#### Factory.create('*name*', *doc*)
+### tree
+
+`Factory.tree('*name*', *doc*)`
+
+Builds an object tree without _id fields. Useful for generating data for templates or passing to mutator methods.
+
+- name
+  - The name define for this factory
+- doc (Optional)
+  - Document object
+
+Example:
+
+```js
+  Factory.define('author', Authors, {
+    name: "John Smith"
+  });
+
+  Factory.define('book', Books, {
+    name: "A book",
+    author: Factory.get('author')
+  });
+
+  const book = Factory.tree('book');
+```
+
+`book` then equals:
+
+```
+{ name: 'A book', author: { name: 'John Smith' }}
+```
+
+### create
+
+`Factory.create('*name*', *doc*)`
 
 Creates (inserts) this factory into mongodb
 
@@ -81,7 +135,9 @@ Creates (inserts) this factory into mongodb
 - doc (Optional)
   - Document object
 
-#### Factory.extend('*name*', *doc*)
+### extend
+
+`Factory.extend('*name*', *doc*)`
 
 Extend from an existing factory
 
@@ -90,7 +146,7 @@ Extend from an existing factory
 - doc (Optional)
   - Document object
 
-## More
+## Other
 
 **Fake** makes a great companion package. See https://atmospherejs.com/anti/fake
 
