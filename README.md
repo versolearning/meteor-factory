@@ -51,11 +51,11 @@ Factory.define('anotherBook', Books, Factory.extend('book', {
 ### Creating documents
 
 ```javascript
-// Inserts a new book into the books collection
-var book = Factory.create('book');
+// Ex. 1: Inserts a new book into the books collection
+const book = Factory.create('book');
 
-// New fields can be added or overwritten
-var book = Factory.create('book', { name: 'A better book' });
+// Ex. 2: New fields can be added or overwritten
+const book = Factory.create('book', { name: 'A better book' });
 ```
 
 ## API
