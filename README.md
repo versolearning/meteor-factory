@@ -64,7 +64,7 @@ Note: When calling `Factory.create('book')` both the Book *and* an Author are cr
 
 ### define
 
-`Factory.define('*name*', *Collection*, *doc*)*.after(doc => { ... })*`
+`Factory.define('name', Collection, doc).after(doc => { ... })`
 
 - name
   - A name for this factory
@@ -77,13 +77,13 @@ Note: When calling `Factory.create('book')` both the Book *and* an Author are cr
 
 ### get
 
-`Factory.get('*name*')`
+`Factory.get('name')`
 
 Returns the instance of *name*. Typical usage is to specify a relationship between collections as seen in the Book example above.
 
 ### build
 
-`Factory.build('*name*', *doc*)`
+`Factory.build('name', doc)`
 
 Builds the data structure for this factory
 
@@ -94,7 +94,7 @@ Builds the data structure for this factory
 
 ### tree
 
-`Factory.tree('*name*', *doc*)`
+`Factory.tree('name', doc)`
 
 Builds an object tree without `_id` fields. Useful for generating data for templates or passing to mutator methods.
 
@@ -126,7 +126,7 @@ Example:
 
 ### create
 
-`Factory.create('*name*', *doc*)`
+`Factory.create('name', doc)`
 
 Creates (inserts) this factory into mongodb
 
@@ -137,7 +137,7 @@ Creates (inserts) this factory into mongodb
 
 ### extend
 
-`Factory.extend('*name*', *doc*)`
+`Factory.extend('name', doc)`
 
 Extend from an existing factory
 
