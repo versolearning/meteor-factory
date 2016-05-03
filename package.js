@@ -1,7 +1,7 @@
 Package.describe({
   name: 'dburles:factory',
   summary: 'Factories for Meteor',
-  version: '0.4.2',
+  version: '1.0.0',
   git: 'https://github.com/versolearning/meteor-factory.git'
 });
 
