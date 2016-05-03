@@ -1,29 +1,23 @@
 Package.describe({
-  name: 'dburles:factory',
-  summary: 'Factories for Meteor',
+  name: 'factory',
   version: '1.0.0',
-  git: 'https://github.com/versolearning/meteor-factory.git'
+  summary: 'Factories for Meteor',
+  documentation: null,
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.2');
+  api.versionsFrom('1.1.0.2');
   api.use([
-    'ecmascript',
-    'minimongo',
     'underscore',
-    'ejson',
-    'random'
+    'minimongo',
+    'random',
+    'ecmascript'
   ]);
-  api.add_files('factory.js');
+  api.addFiles(['factory.js', 'dataset.js', 'factory-api.js']);
   api.export('Factory');
 });
 
 Package.onTest(function(api) {
-  api.use([
-    'ecmascript',
-    'tinytest',
-    'dburles:factory',
-    'underscore'
-  ]);
-  api.add_files('factory_tests.js', 'server');
+  api.use(['ecmascript', 'tinytest', 'factory', 'underscore']);
+  api.addFiles('factory-tests.js', 'server');
 });
