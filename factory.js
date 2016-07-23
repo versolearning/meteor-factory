@@ -42,10 +42,10 @@ Factory.build = (name, attributes = {}, options = {}) => {
   // or return a 'fake' _id (since we're not inserting anything)
   const makeRelation = relName => {
     if (options.insert) {
-      return Factory.create(relName)._id;
+      return Factory.create(relName, {}, options)._id;
     }
     if (options.tree) {
-      return Factory.build(relName, {}, {tree: true});
+      return Factory.build(relName, {}, _.extend(options, {tree: true}));
     }
     // fake an id on build
     return Random.id();
@@ -56,10 +56,8 @@ Factory.build = (name, attributes = {}, options = {}) => {
   };
 
   const getValueFromFunction = func => {
-    const api = {
-      sequence: fn => fn(factory.sequence)
-    };
-    const fnRes = func.call(result, api);
+    const api = { sequence: fn => fn(factory.sequence) };
+    const fnRes = func.call(result, api, options);
     return getValue(fnRes);
   };
 
@@ -104,8 +102,8 @@ Factory.build = (name, attributes = {}, options = {}) => {
   return result;
 };
 
-Factory.tree = (name, attributes) => {
-  return Factory.build(name, attributes, {tree: true});
+Factory.tree = (name, attributes, options = {}) => {
+  return Factory.build(name, attributes, _.extend(options, {tree: true}));
 };
 
 Factory._create = (name, doc) => {
@@ -115,8 +113,8 @@ Factory._create = (name, doc) => {
   return record;
 };
 
-Factory.create = (name, attributes = {}) => {
-  const doc = Factory.build(name, attributes, {insert: true});
+Factory.create = (name, attributes = {}, options = {}) => {
+  const doc = Factory.build(name, attributes, _.extend(options, {insert: true}));
   const record = Factory._create(name, doc);
 
   Factory.get(name).afterHooks.forEach(cb => cb(record));
