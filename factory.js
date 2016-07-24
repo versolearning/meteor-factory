@@ -31,7 +31,7 @@ Factory.get = name => {
   return factory;
 };
 
-Factory.build = (name, attributes = {}, options = {}) => {
+Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
   const factory = Factory.get(name);
   const result = {};
 
@@ -42,10 +42,10 @@ Factory.build = (name, attributes = {}, options = {}) => {
   // or return a 'fake' _id (since we're not inserting anything)
   const makeRelation = relName => {
     if (options.insert) {
-      return Factory.create(relName, {}, options)._id;
+      return Factory.create(relName, {}, userOptions)._id;
     }
     if (options.tree) {
-      return Factory.build(relName, {}, _.extend(options, {tree: true}));
+      return Factory._build(relName, {}, userOptions, {tree: true});
     }
     // fake an id on build
     return Random.id();
@@ -57,7 +57,7 @@ Factory.build = (name, attributes = {}, options = {}) => {
 
   const getValueFromFunction = func => {
     const api = { sequence: fn => fn(factory.sequence) };
-    const fnRes = func.call(result, api, options);
+    const fnRes = func.call(result, api, userOptions);
     return getValue(fnRes);
   };
 
@@ -102,8 +102,12 @@ Factory.build = (name, attributes = {}, options = {}) => {
   return result;
 };
 
-Factory.tree = (name, attributes, options = {}) => {
-  return Factory.build(name, attributes, _.extend(options, {tree: true}));
+Factory.build = (name, attributes = {}, userOptions = {}) => {
+  return Factory._build(name, attributes, userOptions);
+};
+
+Factory.tree = (name, attributes, userOptions = {}) => {
+  return Factory._build(name, attributes, userOptions, {tree: true});
 };
 
 Factory._create = (name, doc) => {
@@ -113,8 +117,8 @@ Factory._create = (name, doc) => {
   return record;
 };
 
-Factory.create = (name, attributes = {}, options = {}) => {
-  const doc = Factory.build(name, attributes, _.extend(options, {insert: true}));
+Factory.create = (name, attributes = {}, userOptions = {}) => {
+  const doc = Factory._build(name, attributes, userOptions, {insert: true});
   const record = Factory._create(name, doc);
 
   Factory.get(name).afterHooks.forEach(cb => cb(record));
