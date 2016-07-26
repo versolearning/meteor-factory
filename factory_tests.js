@@ -359,3 +359,38 @@ Tinytest.add("Factory - Tree - Basic", test => {
 
   test.equal(book.author.name, "John Smith");
 });
+
+Tinytest.add("Factory - Build - With options", test => {
+  Factory.define('author', Authors, {
+    name: "John Smith",
+    books(factory, options = { bookCount: 2 }) {
+      return _(options.bookCount).times((n) => `${n + 1} book by ${this.name}`)
+    }
+  });
+
+  const author = Factory.build('author', {}, { bookCount: 3 });
+
+  test.length(author.books, 3);
+  test.equal(author.books, [
+    '1 book by John Smith',
+    '2 book by John Smith',
+    '3 book by John Smith',
+  ]);
+});
+
+Tinytest.add("Factory - Create - With options", test => {
+  Factory.define('book', Books, {
+    name: "A book",
+    pages(factory, options = { pageCount: 2 }) {
+      return _(options.pageCount).times((n) => `Page ${n + 1}`)
+    }
+  });
+
+  const book = Factory.create('book', {}, { pageCount: 2 });
+
+  test.length(book.pages, 2);
+  test.equal(book.pages, [
+    'Page 1',
+    'Page 2',
+  ]);
+});
