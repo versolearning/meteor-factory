@@ -106,10 +106,6 @@ Builds an object tree without `_id` fields. Useful for generating data for templ
 Example:
 
 ```js
-  Factory.define('publisher', Publishers, {
-    name: "An excellent publisher",
-  });
-
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -128,10 +124,7 @@ Example:
 {
   name: 'A book',
   author: {
-    name: 'John Smith',
-    publisher: {
-      name: 'An excellent publisher'
-    }
+    name: 'John Smith'
   }
 }
 ```
