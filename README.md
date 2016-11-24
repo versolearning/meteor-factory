@@ -96,7 +96,7 @@ Builds the data structure for this factory
 
 `Factory.tree('name', doc)`
 
-Builds an object tree without `_id` fields. Useful for generating data for templates or passing to mutator methods.
+Builds an object tree without `_id` fields. Useful for generating data for templates.
 
 - name
   - The name define for this factory
@@ -106,6 +106,10 @@ Builds an object tree without `_id` fields. Useful for generating data for templ
 Example:
 
 ```js
+  Factory.define('publisher', Publishers, {
+    name: "An excellent publisher",
+  });
+
   Factory.define('author', Authors, {
     name: "John Smith"
   });
@@ -121,7 +125,15 @@ Example:
 `book` then equals:
 
 ```
-{ name: 'A book', author: { name: 'John Smith' }}
+{
+  name: 'A book',
+  author: {
+    name: 'John Smith',
+    publisher: {
+      name: 'An excellent publisher'
+    }
+  }
+}
 ```
 
 ### create
