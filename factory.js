@@ -111,6 +111,9 @@ Factory.tree = (name, attributes, userOptions = {}) => {
 };
 
 Factory._create = (name, doc) => {
+  //if an id generation method is passed, run it first
+  if (_.isFunction(doc._id)) doc._id = doc._id();
+
   const collection = Factory.get(name).collection;
   const insertId = collection.insert(doc);
   const record = collection.findOne(insertId);
