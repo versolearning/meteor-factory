@@ -14,7 +14,7 @@ Package.onUse(function(api) {
     'ejson',
     'random'
   ]);
-  api.add_files('factory.js');
+  api.addFiles('factory.js');
   api.export('Factory');
 });
 
@@ -25,5 +25,5 @@ Package.onTest(function(api) {
     'dburles:factory',
     'underscore'
   ]);
-  api.add_files('factory_tests.js', 'server');
+  api.addFiles('factory_tests.js', 'server');
 });
