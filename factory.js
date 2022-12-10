@@ -23,105 +23,134 @@ Factory.define = (name, collection, attributes) => {
   return factories[name];
 };
 
-Factory.get = name => {
+Factory.get = (name) => {
   const factory = factories[name];
-  if (! factory) {
+  if (!factory) {
     throw new Error("Factory: There is no factory named " + name);
   }
   return factory;
 };
 
-Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
+Factory._build = async (
+  name,
+  attributes = {},
+  userOptions = {},
+  options = {}
+) => {
+  // console.log("+++++Factory+being build", {
+  //   name,
+  //   attributes,
+  //   userOptions,
+  //   options,
+  // });
   const factory = Factory.get(name);
   const result = {};
 
   // "raw" attributes without functions evaluated, or dotted properties resolved
   const extendedAttributes = _.extend({}, factory.attributes, attributes);
 
+  // console.log("extendedAttributes", extendedAttributes);
+
   // either create a new factory and return its _id
   // or return a 'fake' _id (since we're not inserting anything)
-  const makeRelation = relName => {
+  const makeRelation = async (relName) => {
     if (options.insert) {
-      return Factory.create(relName, {}, userOptions)._id;
+      return await Factory.create(relName, {}, userOptions)._id;
     }
     if (options.tree) {
-      return Factory._build(relName, {}, userOptions, {tree: true});
+      return await Factory._build(relName, {}, userOptions, { tree: true });
     }
     // fake an id on build
     return Random.id();
   };
 
-  const getValue = value => {
-    return (value instanceof Factory) ? makeRelation(value.name) : value;
+  const getValue = async (value) => {
+    return value instanceof Factory ? await makeRelation(value.name) : value;
   };
 
-  const getValueFromFunction = func => {
-    const api = { sequence: fn => fn(factory.sequence) };
+  const getValueFromFunction = async (func) => {
+    const api = { sequence: (fn) => fn(factory.sequence) };
     const fnRes = func.call(result, api, userOptions);
-    return getValue(fnRes);
+    return await getValue(fnRes);
   };
 
   factory.sequence += 1;
 
-  const walk = (record, object) => {
-    _.each(object, (value, key) => {
-      let newValue = value;
-      // is this a Factory instance?
-      if (value instanceof Factory) {
-        newValue = makeRelation(value.name);
-      } else if (_.isArray(value)) {
-        newValue = value.map(element => {
-          if (_.isFunction(element)) {
-            return getValueFromFunction(element);
-          }
-          return getValue(element);
-        });
-      } else if (_.isFunction(value)) {
-        newValue = getValueFromFunction(value);
-      // if an object literal is passed in, traverse deeper into it
-      } else if (Object.prototype.toString.call(value) === '[object Object]') {
-        record[key] = record[key] || {};
-        return walk(record[key], value);
-      }
+  const walk = async (record, object) => {
+    await Promise.all(
+      Object.keys(object).map(async (key) => {
+        const value = object[key];
+        let newValue = value;
+        // is this a Factory instance?
+        if (value instanceof Factory) {
+          newValue = await makeRelation(value.name);
+        } else if (Array.isArray(value)) {
+          newValue = await Promise.all(
+            value.map(async (element) => {
+              if (typeof element === "function") {
+                return await getValueFromFunction(element);
+              }
+              return await getValue(element);
+            })
+          );
+          // console.log("value/newValue", value, newValue);
+        } else if (typeof value === "function") {
+          newValue = await getValueFromFunction(value);
+          // if an object literal is passed in, traverse deeper into it
+        } else if (
+          Object.prototype.toString.call(value) === "[object Object]"
+        ) {
+          record[key] = record[key] || {};
+          return await walk(record[key], value);
+        }
 
-      const modifier = {$set: {}};
+        const modifier = { $set: {} };
 
-      if (key !== '_id') {
-        modifier.$set[key] = newValue;
-      }
+        if (key !== "_id") {
+          modifier.$set[key] = newValue;
+        }
 
-      LocalCollection._modify(record, modifier);
-    });
+        LocalCollection._modify(record, modifier);
+      })
+    );
   };
+  // console.log("before walk result", result);
+  await walk(result, extendedAttributes);
+  // console.log("after walk result", result);
 
-  walk(result, extendedAttributes);
-
-  if (! options.tree) {
+  if (!options.tree) {
     result._id = extendedAttributes._id || Random.id();
   }
   return result;
 };
 
-Factory.build = (name, attributes = {}, userOptions = {}) => {
-  return Factory._build(name, attributes, userOptions);
+Factory.build = async (name, attributes = {}, userOptions = {}) => {
+  return await Factory._build(name, attributes, userOptions);
 };
 
-Factory.tree = (name, attributes, userOptions = {}) => {
-  return Factory._build(name, attributes, userOptions, {tree: true});
+Factory.tree = async (name, attributes, userOptions = {}) => {
+  return await Factory._build(name, attributes, userOptions, { tree: true });
 };
 
-Factory._create = (name, doc) => {
+Factory._create = async (name, doc) => {
   const collection = Factory.get(name).collection;
-  const insertId = collection.insert(doc);
-  const record = collection.findOne(insertId);
+  const insertId = await collection.insertAsync(doc);
+  const record = await collection.findOneAsync(insertId);
   return record;
 };
 
-Factory.create = (name, attributes = {}, userOptions = {}) => {
-  const doc = Factory._build(name, attributes, userOptions, {insert: true});
-  const record = Factory._create(name, doc);
-
-  Factory.get(name).afterHooks.forEach(cb => cb(record));
+Factory.create = async (name, attributes = {}, userOptions = {}) => {
+  const doc = await Factory._build(name, attributes, userOptions, {
+    insert: true,
+  });
+  // console.log("+++++Factory+built record", doc);
+  const record = await Factory._create(name, doc);
+  // console.log("+++++Factory+created record", record);
+  await Promise.all(
+    Factory.get(name).afterHooks.map(async (cb) => {
+      return await cb(record);
+    })
+  );
 
   return record;
 };
