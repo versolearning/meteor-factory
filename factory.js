@@ -37,19 +37,11 @@ Factory._build = async (
   userOptions = {},
   options = {}
 ) => {
-  // console.log("+++++Factory+being build", {
-  //   name,
-  //   attributes,
-  //   userOptions,
-  //   options,
-  // });
   const factory = Factory.get(name);
   const result = {};
 
   // "raw" attributes without functions evaluated, or dotted properties resolved
   const extendedAttributes = _.extend({}, factory.attributes, attributes);
-
-  // console.log("extendedAttributes", extendedAttributes);
 
   // either create a new factory and return its _id
   // or return a 'fake' _id (since we're not inserting anything)
@@ -70,17 +62,18 @@ Factory._build = async (
 
   const getValueFromFunction = async (func) => {
     const api = { sequence: (fn) => fn(factory.sequence) };
-    const fnRes = func.call(result, api, userOptions);
+    const fnRes = await func.call(result, api, userOptions);
     return await getValue(fnRes);
   };
 
   factory.sequence += 1;
 
-  const walk = async (record, object) => {
+  const walk = async (record, object, parentKey) => {
     await Promise.all(
       Object.keys(object).map(async (key) => {
         const value = object[key];
         let newValue = value;
+
         // is this a Factory instance?
         if (value instanceof Factory) {
           newValue = await makeRelation(value.name);
@@ -93,7 +86,6 @@ Factory._build = async (
               return await getValue(element);
             })
           );
-          // console.log("value/newValue", value, newValue);
         } else if (typeof value === "function") {
           newValue = await getValueFromFunction(value);
           // if an object literal is passed in, traverse deeper into it
@@ -101,22 +93,21 @@ Factory._build = async (
           Object.prototype.toString.call(value) === "[object Object]"
         ) {
           record[key] = record[key] || {};
-          return await walk(record[key], value);
+          return await walk(record, value, key);
         }
 
         const modifier = { $set: {} };
 
         if (key !== "_id") {
-          modifier.$set[key] = newValue;
+          const modifierKey = parentKey ? `${parentKey}.${key}` : key;
+          modifier.$set[modifierKey] = newValue;
         }
 
         LocalCollection._modify(record, modifier);
       })
     );
   };
-  // console.log("before walk result", result);
   await walk(result, extendedAttributes);
-  // console.log("after walk result", result);
 
   if (!options.tree) {
     result._id = extendedAttributes._id || Random.id();
@@ -143,9 +134,7 @@ Factory.create = async (name, attributes = {}, userOptions = {}) => {
   const doc = await Factory._build(name, attributes, userOptions, {
     insert: true,
   });
-  // console.log("+++++Factory+built record", doc);
   const record = await Factory._create(name, doc);
-  // console.log("+++++Factory+created record", record);
   await Promise.all(
     Factory.get(name).afterHooks.map(async (cb) => {
       return await cb(record);
