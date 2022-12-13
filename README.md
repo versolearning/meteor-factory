@@ -27,40 +27,46 @@ $ meteor add dburles:factory
 ### Defining factories
 
 ```javascript
-Authors = new Meteor.Collection('authors');
-Books = new Meteor.Collection('books');
+Authors = new Meteor.Collection("authors");
+Books = new Meteor.Collection("books");
 
-Factory.define('author', Authors, {
-  name: 'John Smith'
-}).after(author => {
+Factory.define("author", Authors, {
+  name: "John Smith",
+}).after((author) => {
   // Do something smart
 });
 
-Factory.define('book', Books, {
-  authorId: Factory.get('author'),
-  name: 'A book',
-  year() { return _.random(1900, 2014); }
+Factory.define("book", Books, {
+  authorId: Factory.get("author"),
+  name: "A book",
+  year() {
+    return _.random(1900, 2014);
+  },
 });
 
 // We can also extend from an existing factory
-Factory.define('anotherBook', Books, Factory.extend('book', {
-  // ...
-}));
+Factory.define(
+  "anotherBook",
+  Books,
+  Factory.extend("book", {
+    // ...
+  })
+);
 ```
 
 ### Creating documents
 
 ```javascript
 // Ex. 1: Inserts a new book into the books collection
-const book = Factory.create('book');
+const book = Factory.create("book");
 
 // Ex. 2: New fields can be added or overwritten
-const book = Factory.create('book', { name: 'A better book' });
+const book = Factory.create("book", { name: "A better book" });
 ```
 
 ## API
 
-Note: When calling `Factory.create('book')` both the Book *and* an Author are created. The newly created Author `_id` will then be automatically assigned to that field. In the case of calling `Factory.build('book')` as no insert operations are run, the `_id` will be faked.
+Note: When calling `Factory.create('book')` both the Book _and_ an Author are created. The newly created Author `_id` will then be automatically assigned to that field. In the case of calling `Factory.build('book')` as no insert operations are run, the `_id` will be faked.
 
 ### define
 
@@ -72,14 +78,14 @@ Note: When calling `Factory.create('book')` both the Book *and* an Author are cr
   - A meteor collection
 - doc
   - Document object
-- *.after* hook (Optional)
+- _.after_ hook (Optional)
   - Returns the newly inserted document after calling `Factory.create`
 
 ### get
 
 `Factory.get('name')`
 
-Returns the instance of *name*. Typical usage is to specify a relationship between collections as seen in the Book example above.
+Returns the instance of _name_. Typical usage is to specify a relationship between collections as seen in the Book example above.
 
 ### build
 
@@ -106,16 +112,16 @@ Builds an object tree without `_id` fields. Useful for generating data for templ
 Example:
 
 ```js
-  Factory.define('author', Authors, {
-    name: "John Smith"
-  });
+Factory.define("author", Authors, {
+  name: "John Smith",
+});
 
-  Factory.define('book', Books, {
-    name: "A book",
-    author: Factory.get('author')
-  });
+Factory.define("book", Books, {
+  name: "A book",
+  author: Factory.get("author"),
+});
 
-  const book = Factory.tree('book');
+const book = Factory.tree("book");
 ```
 
 `book` then equals:
@@ -155,7 +161,29 @@ Extend from an existing factory
 
 **Fake** makes a great companion package. See https://atmospherejs.com/anti/fake
 
-## License 
+## ASYNC API
+
+Supports Meteor 2.8+
+
+### buildAsync
+
+`await Factory.buildAsync('name', doc)`
+
+Works as `build` function but support async api
+
+### createAsync
+
+`await Factory.create('name', doc)`
+
+Works as `create` function but support async api
+
+### treeAsync
+
+`await Factory.tree('name', doc)`
+
+Works as `tree` function but support async api
+
+## License
 
 MIT. (c) Percolate Studio
 
