@@ -1,11 +1,10 @@
 /* global Factory */
-/* global Authors:true, Books:true */
 
-Authors = new Meteor.Collection("authors");
-Books = new Meteor.Collection("books");
+const Authors = new Meteor.Collection("authors");
+const Books = new Meteor.Collection("books");
 
-/** TEST NONE ASYNC FUNCTIONS */
-Tinytest.add("Factory - Build - Basic build works", (test) => {
+/* Begin sync tests */
+Tinytest.add("Factory (sync) - Build - Basic build works", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -13,7 +12,7 @@ Tinytest.add("Factory - Build - Basic build works", (test) => {
   test.equal(Factory.build("author").name, "John Smith");
 });
 
-Tinytest.add("Factory - Define - After hook", (test) => {
+Tinytest.add("Factory (sync) - Define - After hook", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   }).after((doc) => {
@@ -23,7 +22,7 @@ Tinytest.add("Factory - Define - After hook", (test) => {
   });
 });
 
-Tinytest.add("Factory - Build - Functions - Basic", (test) => {
+Tinytest.add("Factory (sync) - Build - Functions - Basic", (test) => {
   Factory.define("author", Authors, {
     name() {
       return "John Smith";
@@ -33,7 +32,7 @@ Tinytest.add("Factory - Build - Functions - Basic", (test) => {
   test.equal(Factory.build("author").name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Functions - Context", (test) => {
+Tinytest.add("Factory (sync) - Build - Functions - Context", (test) => {
   Factory.define("author", Authors, {
     test: "John Smith",
     name() {
@@ -44,7 +43,7 @@ Tinytest.add("Factory - Build - Functions - Context", (test) => {
   test.equal(Factory.build("author").name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Dotted properties - Basic", (test) => {
+Tinytest.add("Factory (sync) - Build - Dotted properties - Basic", (test) => {
   Factory.define("author", Authors, {
     "profile.name": "John Smith",
   });
@@ -52,7 +51,7 @@ Tinytest.add("Factory - Build - Dotted properties - Basic", (test) => {
   test.equal(Factory.build("author").profile.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Dotted properties - Context", (test) => {
+Tinytest.add("Factory (sync) - Build - Dotted properties - Context", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
     "profile.name"() {
@@ -63,7 +62,7 @@ Tinytest.add("Factory - Build - Dotted properties - Context", (test) => {
   test.equal(Factory.build("author").profile.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Deep objects", (test) => {
+Tinytest.add("Factory (sync) - Build - Deep objects", (test) => {
   Factory.define("author", Authors, {
     profile: {
       name: "John Smith",
@@ -73,32 +72,38 @@ Tinytest.add("Factory - Build - Deep objects", (test) => {
   test.equal(Factory.build("author").profile.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Functions - Deep object - Basic", (test) => {
-  Factory.define("author", Authors, {
-    profile: {
-      name() {
-        return "John Smith";
+Tinytest.add(
+  "Factory (sync) - Build - Functions - Deep object - Basic",
+  (test) => {
+    Factory.define("author", Authors, {
+      profile: {
+        name() {
+          return "John Smith";
+        },
       },
-    },
-  });
+    });
 
-  test.equal(Factory.build("author").profile.name, "John Smith");
-});
+    test.equal(Factory.build("author").profile.name, "John Smith");
+  }
+);
 
-Tinytest.add("Factory - Build - Functions - Deep object - Context", (test) => {
-  Factory.define("author", Authors, {
-    name: "John Smith",
-    profile: {
-      name() {
-        return this.name;
+Tinytest.add(
+  "Factory (sync) - Build - Functions - Deep object - Context",
+  (test) => {
+    Factory.define("author", Authors, {
+      name: "John Smith",
+      profile: {
+        name() {
+          return this.name;
+        },
       },
-    },
-  });
+    });
 
-  test.equal(Factory.build("author").profile.name, "John Smith");
-});
+    test.equal(Factory.build("author").profile.name, "John Smith");
+  }
+);
 
-Tinytest.add("Factory - Build - Extend - Basic", (test) => {
+Tinytest.add("Factory (sync) - Build - Extend - Basic", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -108,7 +113,7 @@ Tinytest.add("Factory - Build - Extend - Basic", (test) => {
   test.equal(Factory.build("authorOne").name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - Extend - With attributes", (test) => {
+Tinytest.add("Factory (sync) - Build - Extend - With attributes", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -126,7 +131,7 @@ Tinytest.add("Factory - Build - Extend - With attributes", (test) => {
 });
 
 Tinytest.add(
-  "Factory - Build - Extend - With attributes (check that we don't modify the parent)",
+  "Factory (sync) - Build - Extend - With attributes (check that we don't modify the parent)",
   (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -149,26 +154,29 @@ Tinytest.add(
   }
 );
 
-Tinytest.add("Factory - Build - Extend - Parent with relationship", (test) => {
-  Factory.define("author", Authors, {
-    name: "John Smith",
-  });
+Tinytest.add(
+  "Factory (sync) - Build - Extend - Parent with relationship",
+  (test) => {
+    Factory.define("author", Authors, {
+      name: "John Smith",
+    });
 
-  Factory.define("book", Books, {
-    authorId: Factory.get("author"),
-    name: "A book",
-    year: 2014,
-  });
+    Factory.define("book", Books, {
+      authorId: Factory.get("author"),
+      name: "A book",
+      year: 2014,
+    });
 
-  Factory.define("bookOne", Books, Factory.extend("book"));
+    Factory.define("bookOne", Books, Factory.extend("book"));
 
-  var bookOne = Factory.create("bookOne");
+    var bookOne = Factory.create("bookOne");
 
-  test.equal(bookOne.name, "A book");
-});
+    test.equal(bookOne.name, "A book");
+  }
+);
 
 Tinytest.add(
-  "Factory - Build - Extend - Parent with relationship - Extra attributes",
+  "Factory (sync) - Build - Extend - Parent with relationship - Extra attributes",
   (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -196,7 +204,7 @@ Tinytest.add(
   }
 );
 
-Tinytest.add("Factory - Create - Basic", (test) => {
+Tinytest.add("Factory (sync) - Create - Basic", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -206,7 +214,7 @@ Tinytest.add("Factory - Create - Basic", (test) => {
   test.equal(author.name, "John Smith");
 });
 
-Tinytest.add("Factory - Create - Relationship", (test) => {
+Tinytest.add("Factory (sync) - Create - Relationship", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -223,7 +231,7 @@ Tinytest.add("Factory - Create - Relationship", (test) => {
 });
 
 Tinytest.add(
-  "Factory - Create - Relationship - return a Factory from function",
+  "Factory (sync) - Create - Relationship - return a Factory from function",
   (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -244,7 +252,7 @@ Tinytest.add(
 );
 
 Tinytest.add(
-  "Factory - Create - Relationship - return a Factory from deep function (dotted)",
+  "Factory (sync) - Create - Relationship - return a Factory from deep function (dotted)",
   (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -265,7 +273,7 @@ Tinytest.add(
 );
 
 Tinytest.add(
-  "Factory - Create - Relationship - return a Factory from deep function",
+  "Factory (sync) - Create - Relationship - return a Factory from deep function",
   (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -287,7 +295,7 @@ Tinytest.add(
   }
 );
 
-Tinytest.add("Factory - Build - Sequence", (test) => {
+Tinytest.add("Factory (sync) - Build - Sequence", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
     email(factory) {
@@ -301,7 +309,7 @@ Tinytest.add("Factory - Build - Sequence", (test) => {
   test.equal(author2.email, "person2@example.com");
 });
 
-Tinytest.add("Factory - Create - Sequence", (test) => {
+Tinytest.add("Factory (sync) - Create - Sequence", (test) => {
   Authors.remove({});
 
   Factory.define("author", Authors, {
@@ -322,7 +330,7 @@ Tinytest.add("Factory - Create - Sequence", (test) => {
   test.equal(foundAuthor2, 1);
 });
 
-Tinytest.add("Factory - Build - Array with Factory", (test) => {
+Tinytest.add("Factory (sync) - Build - Array with Factory", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -338,7 +346,7 @@ Tinytest.add("Factory - Build - Array with Factory", (test) => {
 });
 
 Tinytest.add(
-  "Factory - Build - Array with function returning a Factory",
+  "Factory (sync) - Build - Array with function returning a Factory",
   (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -355,7 +363,7 @@ Tinytest.add(
   }
 );
 
-Tinytest.add("Factory - Build - Array with an object", (test) => {
+Tinytest.add("Factory (sync) - Build - Array with an object", (test) => {
   Factory.define("book", Books, {
     array: [{ objectInArray: true }],
   });
@@ -366,7 +374,7 @@ Tinytest.add("Factory - Build - Array with an object", (test) => {
 });
 
 // Could possibly make this a feature:
-// Tinytest.add("Factory - Build - Array with an object containing a function", test => {
+// Tinytest.add("Factory (sync) - Build - Array with an object containing a function", test => {
 //   Factory.define('book', Books, {
 //     array: [{objectInArrayWithFn: () => true}]
 //   });
@@ -376,7 +384,7 @@ Tinytest.add("Factory - Build - Array with an object", (test) => {
 //   test.equal(book.array[0].objectInArrayWithFn, true);
 // });
 
-Tinytest.add("Factory - Tree - Basic", (test) => {
+Tinytest.add("Factory (sync) - Tree - Basic", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -391,7 +399,7 @@ Tinytest.add("Factory - Tree - Basic", (test) => {
   test.equal(book.author.name, "John Smith");
 });
 
-Tinytest.add("Factory - Build - With options", (test) => {
+Tinytest.add("Factory (sync) - Build - With options", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
     books(factory, options = { bookCount: 2 }) {
@@ -409,7 +417,7 @@ Tinytest.add("Factory - Build - With options", (test) => {
   ]);
 });
 
-Tinytest.add("Factory - Create - With options", (test) => {
+Tinytest.add("Factory (sync) - Create - With options", (test) => {
   Factory.define("book", Books, {
     name: "A book",
     pages(factory, options = { pageCount: 2 }) {
@@ -423,9 +431,10 @@ Tinytest.add("Factory - Create - With options", (test) => {
   test.equal(book.pages, ["Page 1", "Page 2"]);
 });
 
-/** TEST ASYNC FUNCTIONS */
+/* Begin async tests */
+
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Basic build works",
+  "Factory (async) - Build - Basic build works",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -436,7 +445,7 @@ Tinytest.addAsync(
   }
 );
 
-Tinytest.addAsync("ASYNC - Factory - Build - Sequence", async (test) => {
+Tinytest.addAsync("Factory (async) - Build - Sequence", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
     email(factory) {
@@ -451,7 +460,7 @@ Tinytest.addAsync("ASYNC - Factory - Build - Sequence", async (test) => {
 });
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Array with Factory",
+  "Factory (async) - Build - Array with Factory",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -469,7 +478,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Array with function returning a Factory",
+  "Factory (async) - Build - Array with function returning a Factory",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -487,7 +496,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Array with an object",
+  "Factory (async) - Build - Array with an object",
   async (test) => {
     Factory.define("book", Books, {
       array: [{ objectInArray: true }],
@@ -510,7 +519,7 @@ Tinytest.addAsync(
 //   test.equal(book.array[0].objectInArrayWithFn, true);
 // });
 
-Tinytest.addAsync("ASYNC - Factory - Build - Deep objects", async (test) => {
+Tinytest.addAsync("Factory (async) - Build - Deep objects", async (test) => {
   Factory.define("author", Authors, {
     profile: {
       name: "John Smith",
@@ -521,7 +530,7 @@ Tinytest.addAsync("ASYNC - Factory - Build - Deep objects", async (test) => {
   test.equal(built.profile.name, "John Smith");
 });
 
-Tinytest.addAsync("ASYNC - Factory - Build - With options", async (test) => {
+Tinytest.addAsync("Factory (async) - Build - With options", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
     books(factory, options = { bookCount: 2 }) {
@@ -540,7 +549,7 @@ Tinytest.addAsync("ASYNC - Factory - Build - With options", async (test) => {
 });
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Functions - Basic",
+  "Factory (async) - Build - Functions - Basic",
   async (test) => {
     Factory.define("author", Authors, {
       name() {
@@ -554,7 +563,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Functions - Context",
+  "Factory (async) - Build - Functions - Context",
   async (test) => {
     Factory.define("author", Authors, {
       test: "John Smith",
@@ -569,7 +578,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Functions - Deep object - Basic",
+  "Factory (async) - Build - Functions - Deep object - Basic",
   async (test) => {
     Factory.define("author", Authors, {
       profile: {
@@ -585,7 +594,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Functions - Deep object - Context",
+  "Factory (async) - Build - Functions - Deep object - Context",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -602,7 +611,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Dotted properties - Basic",
+  "Factory (async) - Build - Dotted properties - Basic",
   async (test) => {
     Factory.define("author", Authors, {
       "profile.name": "John Smith",
@@ -614,7 +623,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Dotted properties - Context",
+  "Factory (async) - Build - Dotted properties - Context",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -628,7 +637,7 @@ Tinytest.addAsync(
   }
 );
 
-Tinytest.addAsync("ASYNC - Factory - Build - Extend - Basic", async (test) => {
+Tinytest.addAsync("Factory (async) - Build - Extend - Basic", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -640,7 +649,7 @@ Tinytest.addAsync("ASYNC - Factory - Build - Extend - Basic", async (test) => {
 });
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Extend - With attributes",
+  "Factory (async) - Build - Extend - With attributes",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -661,7 +670,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Extend - With attributes (check that we don't modify the parent)",
+  "Factory (async) - Build - Extend - With attributes (check that we don't modify the parent)",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -685,7 +694,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Extend - Parent with relationship",
+  "Factory (async) - Build - Extend - Parent with relationship",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -706,7 +715,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Build - Extend - Parent with relationship - Extra attributes",
+  "Factory (async) - Build - Extend - Parent with relationship - Extra attributes",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -734,7 +743,7 @@ Tinytest.addAsync(
   }
 );
 
-Tinytest.addAsync("ASYNC - Factory - Define - After hook", async (test) => {
+Tinytest.addAsync("Factory (async) - Define - After hook", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   }).after(async (doc) => {
@@ -744,7 +753,7 @@ Tinytest.addAsync("ASYNC - Factory - Define - After hook", async (test) => {
   });
 });
 
-Tinytest.addAsync("ASYNC - Factory - Create - Basic", async (test) => {
+Tinytest.addAsync("Factory (async) - Create - Basic", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -754,7 +763,7 @@ Tinytest.addAsync("ASYNC - Factory - Create - Basic", async (test) => {
   test.equal(author.name, "John Smith");
 });
 
-Tinytest.addAsync("ASYNC - Factory - Create - Relationship", async (test) => {
+Tinytest.addAsync("Factory (async) - Create - Relationship", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -773,7 +782,7 @@ Tinytest.addAsync("ASYNC - Factory - Create - Relationship", async (test) => {
   test.equal(foundAuthor.name, "John Smith");
 });
 
-Tinytest.addAsync("ASYNC - Factory - Create - Sequence", async (test) => {
+Tinytest.addAsync("Factory (async) - Create - Sequence", async (test) => {
   Authors.remove({});
 
   Factory.define("author", Authors, {
@@ -794,7 +803,7 @@ Tinytest.addAsync("ASYNC - Factory - Create - Sequence", async (test) => {
   test.equal(foundAuthor2, 1);
 });
 
-Tinytest.addAsync("ASYNC - Factory - Create - With options", async (test) => {
+Tinytest.addAsync("Factory (async) - Create - With options", async (test) => {
   Factory.define("book", Books, {
     name: "A book",
     pages(factory, options = { pageCount: 2 }) {
@@ -809,7 +818,7 @@ Tinytest.addAsync("ASYNC - Factory - Create - With options", async (test) => {
 });
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Create - Relationship - return a Factory from function",
+  "Factory (async) - Create - Relationship - return a Factory from function",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -832,7 +841,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Create - Relationship - return a Factory from deep function (dotted)",
+  "Factory (async) - Create - Relationship - return a Factory from deep function (dotted)",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -855,7 +864,7 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
-  "ASYNC - Factory - Create - Relationship - return a Factory from deep function",
+  "Factory (async) - Create - Relationship - return a Factory from deep function",
   async (test) => {
     Factory.define("author", Authors, {
       name: "John Smith",
@@ -879,7 +888,7 @@ Tinytest.addAsync(
   }
 );
 
-Tinytest.addAsync("ASYNC - Factory - Tree - Basic", async (test) => {
+Tinytest.addAsync("Factory (async) - Tree - Basic", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
