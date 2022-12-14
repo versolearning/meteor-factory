@@ -17,8 +17,11 @@ $ meteor add dburles:factory
   - [define](https://github.com/versolearning/meteor-factory#define)
   - [get](https://github.com/versolearning/meteor-factory#get)
   - [build](https://github.com/versolearning/meteor-factory#build)
+  - [buildAsync](https://github.com/versolearning/meteor-factory#buildasync)
   - [tree](https://github.com/versolearning/meteor-factory#tree)
+  - [treeAsync](https://github.com/versolearning/meteor-factory#treeasync)
   - [create](https://github.com/versolearning/meteor-factory#create)
+  - [createAsync](https://github.com/versolearning/meteor-factory#createasync)
   - [extend](https://github.com/versolearning/meteor-factory#extend)
 - [Other](https://github.com/versolearning/meteor-factory#)
 
@@ -98,6 +101,10 @@ Builds the data structure for this factory
 - doc (Optional)
   - Document object
 
+### buildAsync
+
+Asynchronous version of [build](https://github.com/versolearning/meteor-factory#build). Returns a Promise.
+
 ### tree
 
 `Factory.tree('name', doc)`
@@ -135,6 +142,10 @@ const book = Factory.tree("book");
 }
 ```
 
+### treeAsync
+
+Asynchronous version of [tree](https://github.com/versolearning/meteor-factory#tree). Returns a Promise.
+
 ### create
 
 `Factory.create('name', doc)`
@@ -144,7 +155,12 @@ Creates (inserts) this factory into mongodb
 - name
   - The name defined for this factory
 - doc (Optional)
+
   - Document object
+
+### createAsync
+
+Asynchronous version of [create](https://github.com/versolearning/meteor-factory#create). Returns a Promise.
 
 ### extend
 
@@ -160,28 +176,6 @@ Extend from an existing factory
 ## Other
 
 **Fake** makes a great companion package. See https://atmospherejs.com/anti/fake
-
-## ASYNC API
-
-Supports Meteor 2.8+
-
-### buildAsync
-
-`await Factory.buildAsync('name', doc)`
-
-Works as `build` function but support async api
-
-### createAsync
-
-`await Factory.create('name', doc)`
-
-Works as `create` function but support async api
-
-### treeAsync
-
-`await Factory.tree('name', doc)`
-
-Works as `tree` function but support async api
 
 ## License
 
