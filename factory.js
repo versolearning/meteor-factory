@@ -63,7 +63,7 @@ Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
 
   factory.sequence += 1;
 
-  const walk = (record, object) => {
+  const walk = (record, object, isNested) => {
     _.each(object, (value, key) => {
       let newValue = value;
       // is this a Factory instance?
@@ -81,12 +81,12 @@ Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
         // if an object literal is passed in, traverse deeper into it
       } else if (Object.prototype.toString.call(value) === "[object Object]") {
         record[key] = record[key] || {};
-        return walk(record[key], value);
+        return walk(record[key], value, true);
       }
 
       const modifier = { $set: {} };
 
-      if (key !== "_id") {
+      if (key !== "_id" || isNested) {
         modifier.$set[key] = newValue;
       }
 
@@ -171,7 +171,7 @@ Factory._buildAsync = async (
 
         const modifier = { $set: {} };
 
-        if (key !== "_id") {
+        if (key !== "_id" || parentKey) {
           const modifierKey = parentKey ? `${parentKey}.${key}` : key;
           modifier.$set[modifierKey] = newValue;
         }
