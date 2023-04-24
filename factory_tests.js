@@ -353,6 +353,19 @@ Tinytest.add("Factory (sync) - Create - Sequence", (test) => {
   test.equal(foundAuthor2, 1);
 });
 
+Tinytest.add("Factory (sync) - Create - Modified record in after hook", (test) => {
+  Factory.define("author", Authors, {
+    name: "John Smith",
+  }).after(author => {
+    Authors.update(author._id, { $set: { name: "John Doe" } })
+  });
+
+
+  const author = Factory.create("author");
+
+  test.equal(author.name, "John Doe");
+});
+
 Tinytest.add("Factory (sync) - Build - Array with Factory", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
@@ -395,6 +408,7 @@ Tinytest.add("Factory (sync) - Build - Array with an object", (test) => {
 
   test.isTrue(book.array[0].objectInArray);
 });
+
 
 // Could possibly make this a feature:
 // Tinytest.add("Factory (sync) - Build - Array with an object containing a function", test => {
@@ -910,6 +924,19 @@ Tinytest.addAsync(
     test.equal(foundAuthor.name, "John Smith");
   }
 );
+
+Tinytest.addAsync("Factory (async) - Create - Modified record in after hook", async (test) => {
+  Factory.define("author", Authors, {
+    name: "John Smith",
+  }).after(author => {
+    Authors.update(author._id, { $set: { name: "John Doe" } })
+  });
+
+
+  const author = await Factory.createAsync("author");
+
+  test.equal(author.name, "John Doe");
+})
 
 Tinytest.addAsync("Factory (async) - Create - Nested _id field", async (test) => {
   Factory.define("bookWithAuthor", Books, { authorLink: { _id: "test" } })
