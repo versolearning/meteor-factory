@@ -23,7 +23,7 @@ $ meteor add dburles:factory
   - [create](https://github.com/versolearning/meteor-factory#create)
   - [createAsync](https://github.com/versolearning/meteor-factory#createasync)
   - [extend](https://github.com/versolearning/meteor-factory#extend)
-- [Other](https://github.com/versolearning/meteor-factory#)
+- [Other](https://github.com/versolearning/meteor-factory#other)
 
 ## Examples
 

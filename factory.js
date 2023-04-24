@@ -226,8 +226,8 @@ Factory.create = (name, attributes = {}, userOptions = {}) => {
 
   Factory.get(name).afterHooks.forEach((cb) => cb(record));
   
-  if (afterHooks.length) {
-    return collection.findOne(record._id);
+  if (Factory.get(name).afterHooks.length) {
+    return Factory.get(name).collection.findOne(record._id);
   }
 
   return record;
@@ -244,8 +244,8 @@ Factory.createAsync = async (name, attributes = {}, userOptions = {}) => {
     })
   );
   
-  if (afterHooks.length) {
-    return collection.findOne(record._id);
+  if (Factory.get(name).afterHooks.length) {
+    return Factory.get(name).collection.findOneAsync(record._id);
   }
 
   return record;
