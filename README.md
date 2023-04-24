@@ -23,7 +23,8 @@ $ meteor add dburles:factory
   - [create](https://github.com/versolearning/meteor-factory#create)
   - [createAsync](https://github.com/versolearning/meteor-factory#createasync)
   - [extend](https://github.com/versolearning/meteor-factory#extend)
-- [Other](https://github.com/versolearning/meteor-factory#)
+- [Contributing](https://github.com/versolearning/meteor-factory#contributing)
+- [Other](https://github.com/versolearning/meteor-factory#other)
 
 ## Examples
 
@@ -172,6 +173,20 @@ Extend from an existing factory
   - The name defined for this factory
 - doc (Optional)
   - Document object
+
+
+## Contributing
+
+### Testing
+
+Please submit new PRs with tests if applicable. To run the test suite, run the following command in your terminal:
+
+```
+meteor test-packages ./
+```
+
+Then open a browser at `localhost:3000` (by default).
+
 
 ## Other
 
