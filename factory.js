@@ -228,7 +228,7 @@ Factory.create = (name, attributes = {}, userOptions = {}) => {
   const record = Factory._create(name, doc);
 
   Factory.get(name).afterHooks.forEach((cb) => cb(record));
-  
+
   if (Factory.get(name).afterHooks.length) {
     return Factory.get(name).collection.findOne(record._id);
   }
@@ -246,7 +246,7 @@ Factory.createAsync = async (name, attributes = {}, userOptions = {}) => {
       return await cb(record);
     })
   );
-  
+
   if (Factory.get(name).afterHooks.length) {
     return Factory.get(name).collection.findOneAsync(record._id);
   }
