@@ -171,7 +171,7 @@ Factory._buildAsync = async (
 
         const modifier = { $set: {} };
 
-        if (key !== "_id" || parentKey) {
+        if (key !== "_id" || parentKey) {
           const modifierKey = parentKey ? `${parentKey}.${key}` : key;
           modifier.$set[modifierKey] = newValue;
         }
