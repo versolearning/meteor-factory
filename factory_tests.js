@@ -298,7 +298,7 @@ Tinytest.add(
 Tinytest.add("Factory (sync) - Create - Nested _id field", (test) => {
   Factory.define("bookWithAuthor", Books, { authorLink: { _id: "test" } })
 
-  var book = Factory.create("bookWithAuthor");
+  const book = Factory.create("bookWithAuthor");
 
   test.equal(book.authorLink._id, "test")
 });
@@ -311,10 +311,11 @@ Tinytest.add("Factory (sync) - Create - Nested relationship", (test) => {
     { _id: Factory.get("author") },
   });
 
-  var book = Factory.create("bookWithAuthor");
-
+  const book = Factory.create("bookWithAuthor");
+  const author = Authors.findOne({ _id: book.authorLink._id })
+  
   test.isTrue(!!book.authorLink._id);
-  test.equal(book.authorLink._id, Authors.findOne({_id: book.authorLink._id })._id);
+  test.equal(book.authorLink._id, author._id);
 });
 
 Tinytest.add("Factory (sync) - Build - Sequence", (test) => {
@@ -910,15 +911,15 @@ Tinytest.addAsync(
   }
 );
 
-Tinytest.add("Factory (async) - Create - Nested _id field", async (test) => {
+Tinytest.addAsync("Factory (async) - Create - Nested _id field", async (test) => {
   Factory.define("bookWithAuthor", Books, { authorLink: { _id: "test" } })
 
-  var book = await Factory.createAsync("bookWithAuthor");
+  const book = await Factory.createAsync("bookWithAuthor");
 
   test.equal(book.authorLink._id, "test")
 });
 
-Tinytest.add("Factory (async) - Create - Nested relationship", async (test) => {
+Tinytest.addAsync("Factory (async) - Create - Nested relationship", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
@@ -926,10 +927,11 @@ Tinytest.add("Factory (async) - Create - Nested relationship", async (test) => {
     { _id: Factory.get("author") },
   });
 
-  var book = await Factory.create("bookWithAuthor");
-
+  const book = await Factory.create("bookWithAuthor");
+  const author = await Authors.findOneAsync({ _id: book.authorLink._id });
+  
   test.isTrue(!!book.authorLink._id);
-  test.equal(book.authorLink._id, await Authors.findOneAsync({_id: book.authorLink._id })._id);
+  test.equal(book.authorLink._id, author._id);
 });
 
 Tinytest.addAsync("Factory (async) - Tree - Basic", async (test) => {
