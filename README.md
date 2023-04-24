@@ -174,19 +174,17 @@ Extend from an existing factory
 - doc (Optional)
   - Document object
 
-
 ## Contributing
 
 ### Testing
 
-Please submit new PRs with tests if applicable. To run the test suite, run the following command in your terminal:
+Please submit new pull requests with tests if applicable. To run the test suite, run the following command:
 
 ```
-meteor test-packages ./
+$ meteor test-packages ./
 ```
 
 Then open a browser at `localhost:3000` (by default).
-
 
 ## Other
 
