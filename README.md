@@ -180,7 +180,7 @@ Extend from an existing factory
 
 Please submit new pull requests with tests if applicable. To run the test suite, run the following command:
 
-```
+```sh
 $ meteor test-packages ./
 ```
 
