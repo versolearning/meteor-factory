@@ -63,31 +63,34 @@ Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
 
   factory.sequence += 1;
 
-  const walk = (record, object, isNested) => {
-    _.each(object, (value, key) => {
+  const walk = (record, object, parentKey) => {
+    Object.keys(object).forEach((key) => {
+      const value = object[key];
       let newValue = value;
+
       // is this a Factory instance?
       if (value instanceof Factory) {
         newValue = makeRelation(value.name);
       } else if (_.isArray(value)) {
         newValue = value.map((element) => {
-          if (_.isFunction(element)) {
+          if (typeof element === "function") {
             return getValueFromFunction(element);
           }
           return getValue(element);
         });
-      } else if (_.isFunction(value)) {
+      } else if (typeof value === "function") {
         newValue = getValueFromFunction(value);
         // if an object literal is passed in, traverse deeper into it
       } else if (Object.prototype.toString.call(value) === "[object Object]") {
         record[key] = record[key] || {};
-        return walk(record[key], value, true);
+        return walk(record, value, key);
       }
 
       const modifier = { $set: {} };
 
-      if (key !== "_id" || isNested) {
-        modifier.$set[key] = newValue;
+      if (key !== "_id" || parentKey) {
+        const modifierKey = parentKey ? `${parentKey}.${key}` : key;
+        modifier.$set[modifierKey] = newValue;
       }
 
       LocalCollection._modify(record, modifier);
