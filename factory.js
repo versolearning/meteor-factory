@@ -64,7 +64,6 @@ Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
   factory.sequence += 1;
 
   const walk = (record, object, parentKey) => {
-    console.log('parentKey:', parentKey);
     Object.keys(object).forEach((key) => {
       const value = object[key];
       let newValue = value;
