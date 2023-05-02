@@ -64,6 +64,7 @@ Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
   factory.sequence += 1;
 
   const walk = (record, object, parentKey) => {
+    console.log('parentKey:', parentKey);
     Object.keys(object).forEach((key) => {
       const value = object[key];
       let newValue = value;
@@ -82,14 +83,15 @@ Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
         newValue = getValueFromFunction(value);
         // if an object literal is passed in, traverse deeper into it
       } else if (Object.prototype.toString.call(value) === "[object Object]") {
-        record[key] = record[key] || {};
-        return walk(record, value, key);
+        const finalKey = parentKey ? `${parentKey}.${key}` : key;
+        return walk(record, value, finalKey);
       }
 
       const modifier = { $set: {} };
 
       if (key !== "_id" || parentKey) {
-        const modifierKey = parentKey ? `${parentKey}.${key}` : key;
+        const finalKey = parentKey ? `${parentKey}.${key}` : key;
+        const modifierKey = finalKey;
         modifier.$set[modifierKey] = newValue;
       }
 
@@ -168,8 +170,8 @@ Factory._buildAsync = async (
         } else if (
           Object.prototype.toString.call(value) === "[object Object]"
         ) {
-          record[key] = record[key] || {};
-          return await walk(record, value, key);
+          const finalKey = parentKey ? `${parentKey}.${key}` : key;
+          return await walk(record, value, finalKey);
         }
 
         const modifier = { $set: {} };
