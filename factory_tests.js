@@ -473,11 +473,11 @@ Tinytest.add("Factory (sync) - Create - Deeply nested override", (test) => {
   Factory.define("book", Books, { name: "A book" });
 
   const book = Factory.create("book", {
-    nested: { object: { hello: 'world' } },
+    nested: { object: { hello: "world" } },
   });
 
-  test.equal(book.nested.object.hello, "world")
-  test.equal(book.object, undefined)
+  test.equal(book.nested.object.hello, "world");
+  test.equal(book.object, undefined);
 });
 
 /* Begin async tests */
@@ -996,13 +996,16 @@ Tinytest.addAsync("Factory (async) - Tree - Basic", async (test) => {
   test.equal(book.author.name, "John Smith");
 });
 
-Tinytest.addAsync("Factory (async) - Create - Deeply nested override", async (test) => {
-  Factory.define("book", Books, { name: "A book" });
+Tinytest.addAsync(
+  "Factory (async) - Create - Deeply nested override",
+  async (test) => {
+    Factory.define("book", Books, { name: "A book" });
 
-  const book = await Factory.createAsync("book", {
-    nested: { object: { hello: 'world' } },
-  });
+    const book = await Factory.createAsync("book", {
+      nested: { object: { hello: "world" } },
+    });
 
-  test.equal(book.nested.object.hello, "world")
-  test.equal(book.object, undefined)
-});
+    test.equal(book.nested.object.hello, "world");
+    test.equal(book.object, undefined);
+  }
+);
