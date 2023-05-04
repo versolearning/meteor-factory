@@ -122,7 +122,8 @@ Factory._buildAsync = async (
   // or return a 'fake' _id (since we're not inserting anything)
   const makeRelation = async (relName) => {
     if (options.insert) {
-      return await Factory.createAsync(relName, {}, userOptions)._id;
+      const doc = await Factory.createAsync(relName, {}, userOptions);
+      return doc._id;
     }
     if (options.tree) {
       return await Factory._buildAsync(relName, {}, userOptions, {

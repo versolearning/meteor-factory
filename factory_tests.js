@@ -483,27 +483,26 @@ Tinytest.add("Factory (sync) - Create - Relationship", (test) => {
   });
 
   const book = Factory.create("book");
+  const author = Authors.findOne(book.authorId);
 
-  test.equal(Authors.findOne(book.authorId).name, "John Smith");
+  test.equal(author.name, "John Smith");
 });
 
 Tinytest.addAsync("Factory (async) - Create - Relationship", async (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
   });
-  const author = await Factory.createAsync("author");
 
   Factory.define("book", Books, {
-    authorId: author._id,
+    authorId: Factory.get("author"),
     name: "A book",
     year: 2014,
   });
 
   const book = await Factory.createAsync("book");
+  const author = await Authors.findOneAsync(book.authorId);
 
-  const foundAuthor = await Authors.findOneAsync(book.authorId);
-
-  test.equal(foundAuthor.name, "John Smith");
+  test.equal(author.name, "John Smith");
 });
 
 Tinytest.add(
@@ -522,10 +521,9 @@ Tinytest.add(
     });
 
     const book = Factory.create("book");
+    const author = Authors.findOne(book.authorId);
 
-    const foundAuthor = Authors.findOne(book.authorId);
-
-    test.equal(foundAuthor.name, "John Smith");
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -535,20 +533,19 @@ Tinytest.addAsync(
     Factory.define("author", Authors, {
       name: "John Smith",
     });
-    const author = await Factory.createAsync("author");
 
     Factory.define("book", Books, {
-      authorId: async () => {
-        return await Authors.findOneAsync(author._id);
+      authorId() {
+        return Factory.get("author");
       },
       name: "A book",
       year: 2014,
     });
 
     const book = await Factory.createAsync("book");
-    const foundAuthor = await Authors.findOneAsync(book.authorId);
+    const author = await Authors.findOneAsync(book.authorId);
 
-    test.equal(foundAuthor.name, "John Smith");
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -568,8 +565,9 @@ Tinytest.add(
     });
 
     const book = Factory.create("book");
+    const author = Authors.findOne(book.good.authorId);
 
-    test.equal(Authors.findOne(book.good.authorId).name, "John Smith");
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -580,20 +578,18 @@ Tinytest.addAsync(
       name: "John Smith",
     });
 
-    const author = await Factory.createAsync("author");
-
     Factory.define("book", Books, {
-      async "good.authorId"() {
-        return await Authors.findOneAsync(author._id);
+      "good.authorId"() {
+        return Factory.get("author");
       },
       name: "A book",
       year: 2014,
     });
 
     const book = await Factory.createAsync("book");
-    const foundAuthor = await Authors.findOneAsync(book.good.authorId);
+    const author = await Authors.findOneAsync(book.good.authorId);
 
-    test.equal(foundAuthor.name, "John Smith");
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -615,8 +611,9 @@ Tinytest.add(
     });
 
     const book = Factory.create("book");
+    const author = Authors.findOne(book.good.authorId);
 
-    test.equal(Authors.findOne(book.good.authorId).name, "John Smith");
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -626,12 +623,11 @@ Tinytest.addAsync(
     Factory.define("author", Authors, {
       name: "John Smith",
     });
-    const author = await Factory.createAsync("author");
 
     Factory.define("book", Books, {
       good: {
-        async authorId() {
-          return (await Authors.findOneAsync(author._id))._id;
+        authorId() {
+          return Factory.get("author");
         },
       },
       name: "A book",
@@ -639,9 +635,9 @@ Tinytest.addAsync(
     });
 
     const book = await Factory.createAsync("book");
-    const foundAuthor = await Authors.findOneAsync(book.good.authorId);
+    const author = await Authors.findOneAsync(book.good.authorId);
 
-    test.equal(foundAuthor.name, "John Smith");
+    test.equal(author.name, "John Smith");
   }
 );
 
