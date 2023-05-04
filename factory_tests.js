@@ -1,9 +1,6 @@
-/* global Factory */
-
 const Authors = new Meteor.Collection("authors");
 const Books = new Meteor.Collection("books");
 
-/* Begin sync tests */
 Tinytest.add("Factory (sync) - Build - Basic build works", (test) => {
   Factory.define("author", Authors, {
     name: "John Smith",
