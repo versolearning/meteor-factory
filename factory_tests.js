@@ -480,6 +480,22 @@ Tinytest.add("Factory (sync) - Create - Deeply nested override", (test) => {
   test.equal(book.object, undefined);
 });
 
+Tinytest.only("Factory (sync) - Create - Deeply nested link in array of objects", (test) => {
+  Factory.define("author", Authors, { name: "John Smith" });
+  Factory.define("book1", Books, { links: () => [{_id: Factory.get("author") }] });
+  Factory.define("book2", Books, { links: () => [{ _id: Factory.create("author")._id }] });
+
+  // Failing
+  const book1 = Factory.create("book1", {});
+  const author1 = Authors.findOne(book1.links[0]._id);
+  test.equal(book1.links[0]._id, author1._id);
+
+  // Working
+  const book2 = Factory.create("book2", {});
+  const author2 = Authors.findOne(book2.links[0]._id);
+  test.equal(book2.links[0]._id, author2._id);
+});
+
 /* Begin async tests */
 
 Tinytest.addAsync(
