@@ -6,7 +6,8 @@ Tinytest.add("Factory (sync) - Build - Basic build works", (test) => {
     name: "John Smith",
   });
 
-  const author = Factory.build("author").name;
+  const author = Factory.build("author");
+
   test.equal(author.name, "John Smith");
 });
 
