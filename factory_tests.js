@@ -6,7 +6,8 @@ Tinytest.add("Factory (sync) - Build - Basic build works", (test) => {
     name: "John Smith",
   });
 
-  test.equal(Factory.build("author").name, "John Smith");
+  const author = Factory.build("author").name;
+  test.equal(author.name, "John Smith");
 });
 
 Tinytest.addAsync(
@@ -15,9 +16,8 @@ Tinytest.addAsync(
     Factory.define("author", Authors, {
       name: "John Smith",
     });
-    const author = await Factory.buildAsync("author");
 
-    console.log(author);
+    const author = await Factory.buildAsync("author");
 
     test.equal(author.name, "John Smith");
   }
@@ -28,6 +28,7 @@ Tinytest.add("Factory (sync) - Define - After hook", (test) => {
     name: "John Smith",
   }).after((doc) => {
     const author = Factory.create("author");
+
     test.equal(author.name, "John Smith");
     test.equal(doc.name, "John Smith");
   });
@@ -38,6 +39,7 @@ Tinytest.addAsync("Factory (async) - Define - After hook", async (test) => {
     name: "John Smith",
   }).after(async (doc) => {
     const author = await Factory.createAsync("author");
+
     test.equal(author.name, "John Smith");
     test.equal(doc.name, "John Smith");
   });
@@ -50,7 +52,9 @@ Tinytest.add("Factory (sync) - Build - Functions - Basic", (test) => {
     },
   });
 
-  test.equal(Factory.build("author").name, "John Smith");
+  const author = Factory.build("author");
+
+  test.equal(author.name, "John Smith");
 });
 
 Tinytest.addAsync(
@@ -61,6 +65,7 @@ Tinytest.addAsync(
         return "John Smith";
       },
     });
+
     const author = await Factory.buildAsync("author");
 
     test.equal(author.name, "John Smith");
@@ -75,7 +80,9 @@ Tinytest.add("Factory (sync) - Build - Functions - Context", (test) => {
     },
   });
 
-  test.equal(Factory.build("author").name, "John Smith");
+  const author = Factory.build("author");
+
+  test.equal(author.name, "John Smith");
 });
 
 Tinytest.addAsync(
@@ -87,6 +94,7 @@ Tinytest.addAsync(
         return this.test;
       },
     });
+
     const author = await Factory.buildAsync("author");
 
     test.equal(author.name, "John Smith");
@@ -819,8 +827,6 @@ Tinytest.addAsync(
     });
 
     const book = await Factory.buildAsync("book");
-
-    console.log(book);
 
     test.length(book.authorIds, 2);
     test.length(book.authorIds[0], 17);
