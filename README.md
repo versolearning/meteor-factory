@@ -5,7 +5,7 @@ A package for creating test data or for generating fixtures.
 ## Installation
 
 ```sh
-$ meteor add dburles:factory
+meteor add dburles:factory
 ```
 
 ## Table of Contents
@@ -181,7 +181,7 @@ Extend from an existing factory
 Please submit new pull requests with tests if applicable. To run the test suite, run the following command:
 
 ```sh
-$ meteor test-packages ./
+meteor test-packages ./
 ```
 
 Then open a browser at `localhost:3000` (by default).
