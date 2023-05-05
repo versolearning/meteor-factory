@@ -6,7 +6,9 @@ Tinytest.add("Factory (sync) - Build - Basic build works", (test) => {
     name: "John Smith",
   });
 
-  test.equal(Factory.build("author").name, "John Smith");
+  const author = Factory.build("author");
+
+  test.equal(author.name, "John Smith");
 });
 
 Tinytest.addAsync(
@@ -15,9 +17,10 @@ Tinytest.addAsync(
     Factory.define("author", Authors, {
       name: "John Smith",
     });
-    const built = await Factory.buildAsync("author");
 
-    test.equal(built.name, "John Smith");
+    const author = await Factory.buildAsync("author");
+
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -26,6 +29,7 @@ Tinytest.add("Factory (sync) - Define - After hook", (test) => {
     name: "John Smith",
   }).after((doc) => {
     const author = Factory.create("author");
+
     test.equal(author.name, "John Smith");
     test.equal(doc.name, "John Smith");
   });
@@ -36,6 +40,7 @@ Tinytest.addAsync("Factory (async) - Define - After hook", async (test) => {
     name: "John Smith",
   }).after(async (doc) => {
     const author = await Factory.createAsync("author");
+
     test.equal(author.name, "John Smith");
     test.equal(doc.name, "John Smith");
   });
@@ -48,7 +53,9 @@ Tinytest.add("Factory (sync) - Build - Functions - Basic", (test) => {
     },
   });
 
-  test.equal(Factory.build("author").name, "John Smith");
+  const author = Factory.build("author");
+
+  test.equal(author.name, "John Smith");
 });
 
 Tinytest.addAsync(
@@ -59,9 +66,10 @@ Tinytest.addAsync(
         return "John Smith";
       },
     });
-    const built = await Factory.buildAsync("author");
 
-    test.equal(built.name, "John Smith");
+    const author = await Factory.buildAsync("author");
+
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -73,7 +81,9 @@ Tinytest.add("Factory (sync) - Build - Functions - Context", (test) => {
     },
   });
 
-  test.equal(Factory.build("author").name, "John Smith");
+  const author = Factory.build("author");
+
+  test.equal(author.name, "John Smith");
 });
 
 Tinytest.addAsync(
@@ -85,9 +95,10 @@ Tinytest.addAsync(
         return this.test;
       },
     });
-    const built = await Factory.buildAsync("author");
 
-    test.equal(built.name, "John Smith");
+    const author = await Factory.buildAsync("author");
+
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -882,16 +893,31 @@ Tinytest.addAsync(
   }
 );
 
-// Could possibly make this a feature:
-// Tinytest.add("Factory (sync) - Build - Array with an object containing a function", test => {
-//   Factory.define('book', Books, {
-//     array: [{objectInArrayWithFn: () => true}]
-//   });
+Tinytest.add(
+  "Factory (sync) - Build - Array with an object containing a function",
+  (test) => {
+    Factory.define("book", Books, {
+      array: [{ objectInArrayWithFn: () => true }],
+    });
 
-//   const book = Factory.build('book');
+    const book = Factory.build("book");
 
-//   test.equal(book.array[0].objectInArrayWithFn, true);
-// });
+    test.equal(book.array[0].objectInArrayWithFn, true);
+  }
+);
+
+Tinytest.addAsync(
+  "Factory (async) - Build - Array with an object containing a function",
+  async (test) => {
+    Factory.define("book", Books, {
+      array: [{ objectInArrayWithFn: () => true }],
+    });
+
+    const book = await Factory.buildAsync("book");
+
+    test.isTrue(book.array[0].objectInArrayWithFn);
+  }
+);
 
 Tinytest.add("Factory (sync) - Tree - Basic", (test) => {
   Factory.define("author", Authors, {
@@ -1009,5 +1035,31 @@ Tinytest.addAsync(
 
     test.equal(book.nested.object.hello, "world");
     test.equal(book.object, undefined);
+  }
+);
+
+Tinytest.add(
+  "Factory (sync) - Define - Deeply nested reference in array of objects",
+  (test) => {
+    Factory.define("author", Authors, { name: "John Smith" });
+    Factory.define("book", Books, { links: [{ _id: Factory.get("author") }] });
+
+    const book = Factory.create("book");
+    const author = Authors.findOne(book.links[0]._id);
+
+    test.equal(book.links[0]._id, author._id);
+  }
+);
+
+Tinytest.addAsync(
+  "Factory (async) - Define - Deeply nested reference in array of objects",
+  async (test) => {
+    Factory.define("author", Authors, { name: "John Smith" });
+    Factory.define("book", Books, { links: [{ _id: Factory.get("author") }] });
+
+    const book = await Factory.createAsync("book");
+    const author = Authors.findOne(book.links[0]._id);
+
+    test.equal(book.links[0]._id, author._id);
   }
 );
