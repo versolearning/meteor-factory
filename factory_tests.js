@@ -15,9 +15,11 @@ Tinytest.addAsync(
     Factory.define("author", Authors, {
       name: "John Smith",
     });
-    const built = await Factory.buildAsync("author");
+    const author = await Factory.buildAsync("author");
 
-    test.equal(built.name, "John Smith");
+    console.log(author);
+
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -59,9 +61,9 @@ Tinytest.addAsync(
         return "John Smith";
       },
     });
-    const built = await Factory.buildAsync("author");
+    const author = await Factory.buildAsync("author");
 
-    test.equal(built.name, "John Smith");
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -85,9 +87,9 @@ Tinytest.addAsync(
         return this.test;
       },
     });
-    const built = await Factory.buildAsync("author");
+    const author = await Factory.buildAsync("author");
 
-    test.equal(built.name, "John Smith");
+    test.equal(author.name, "John Smith");
   }
 );
 
@@ -818,6 +820,8 @@ Tinytest.addAsync(
 
     const book = await Factory.buildAsync("book");
 
+    console.log(book);
+
     test.length(book.authorIds, 2);
     test.length(book.authorIds[0], 17);
   }
@@ -882,16 +886,31 @@ Tinytest.addAsync(
   }
 );
 
-// Could possibly make this a feature:
-// Tinytest.add("Factory (sync) - Build - Array with an object containing a function", test => {
-//   Factory.define('book', Books, {
-//     array: [{objectInArrayWithFn: () => true}]
-//   });
+Tinytest.add(
+  "Factory (sync) - Build - Array with an object containing a function",
+  (test) => {
+    Factory.define("book", Books, {
+      array: [{ objectInArrayWithFn: () => true }],
+    });
 
-//   const book = Factory.build('book');
+    const book = Factory.build("book");
 
-//   test.equal(book.array[0].objectInArrayWithFn, true);
-// });
+    test.equal(book.array[0].objectInArrayWithFn, true);
+  }
+);
+
+Tinytest.addAsync(
+  "Factory (async) - Build - Array with an object containing a function",
+  async (test) => {
+    Factory.define("book", Books, {
+      array: [{ objectInArrayWithFn: () => true }],
+    });
+
+    const book = await Factory.buildAsync("book");
+
+    test.isTrue(book.array[0].objectInArrayWithFn);
+  }
+);
 
 Tinytest.add("Factory (sync) - Tree - Basic", (test) => {
   Factory.define("author", Authors, {

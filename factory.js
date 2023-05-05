@@ -33,10 +33,9 @@ Factory.get = (name) => {
 
 Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
   const factory = Factory.get(name);
-  const result = {};
 
   // "raw" attributes without functions evaluated, or dotted properties resolved
-  const extendedAttributes = _.extend({}, factory.attributes, attributes);
+  const extendedAttributes = { ...factory.attributes, ...attributes };
 
   // either create a new factory and return its _id
   // or return a 'fake' _id (since we're not inserting anything)
@@ -51,58 +50,50 @@ Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
     return Random.id();
   };
 
-  const getValue = (value) => {
-    return value instanceof Factory ? makeRelation(value.name) : value;
-  };
-
-  const getValueFromFunction = (func) => {
-    const api = { sequence: (fn) => fn(factory.sequence) };
-    const fnRes = func.call(result, api, userOptions);
-    return getValue(fnRes);
-  };
-
   factory.sequence += 1;
 
-  const walk = (record, object, parentKey) => {
-    Object.keys(object).forEach((key) => {
-      const value = object[key];
-      let newValue = value;
+  const build = (object) => {
+    const result = {};
 
-      // is this a Factory instance?
+    const resolve = (value) => {
       if (value instanceof Factory) {
-        newValue = makeRelation(value.name);
-      } else if (_.isArray(value)) {
-        newValue = value.map((element) => {
-          if (typeof element === "function") {
-            return getValueFromFunction(element);
-          }
-          return getValue(element);
+        return makeRelation(value.name);
+      } else if (Array.isArray(value)) {
+        return value.map((entity) => {
+          return resolve(entity);
         });
       } else if (typeof value === "function") {
-        newValue = getValueFromFunction(value);
+        const api = { sequence: (fn) => fn(factory.sequence) };
+        const fnRes = value.call(extendedAttributes, api, userOptions);
+        return resolve(fnRes);
         // if an object literal is passed in, traverse deeper into it
       } else if (Object.prototype.toString.call(value) === "[object Object]") {
-        const finalKey = parentKey ? `${parentKey}.${key}` : key;
-        return walk(record, value, finalKey);
+        return build(value);
       }
 
-      const modifier = { $set: {} };
+      return value;
+    };
 
-      if (key !== "_id" || parentKey) {
-        const finalKey = parentKey ? `${parentKey}.${key}` : key;
-        const modifierKey = finalKey;
-        modifier.$set[modifierKey] = newValue;
+    for (const key in object) {
+      result[key] = resolve(object[key]);
+
+      if (key !== "_id") {
+        // resolve dotted properties
+        const modifier = { $set: {} };
+        modifier.$set[key] = result[key];
+        LocalCollection._modify(result, modifier);
       }
+    }
 
-      LocalCollection._modify(record, modifier);
-    });
+    return result;
   };
 
-  walk(result, extendedAttributes);
+  const result = build(extendedAttributes);
 
   if (!options.tree) {
     result._id = extendedAttributes._id || Random.id();
   }
+
   return result;
 };
 
@@ -113,10 +104,9 @@ Factory._buildAsync = async (
   options = {}
 ) => {
   const factory = Factory.get(name);
-  const result = {};
 
   // "raw" attributes without functions evaluated, or dotted properties resolved
-  const extendedAttributes = _.extend({}, factory.attributes, attributes);
+  const extendedAttributes = { ...factory.attributes, ...attributes };
 
   // either create a new factory and return its _id
   // or return a 'fake' _id (since we're not inserting anything)
@@ -134,62 +124,52 @@ Factory._buildAsync = async (
     return Random.id();
   };
 
-  const getValue = async (value) => {
-    return value instanceof Factory ? await makeRelation(value.name) : value;
-  };
-
-  const getValueFromFunction = async (func) => {
-    const api = { sequence: (fn) => fn(factory.sequence) };
-    const fnRes = await func.call(result, api, userOptions);
-    return await getValue(fnRes);
-  };
-
   factory.sequence += 1;
 
-  const walk = async (record, object, parentKey) => {
-    await Promise.all(
-      Object.keys(object).map(async (key) => {
-        const value = object[key];
-        let newValue = value;
+  const build = async (object) => {
+    const result = {};
 
-        // is this a Factory instance?
-        if (value instanceof Factory) {
-          newValue = await makeRelation(value.name);
-        } else if (Array.isArray(value)) {
-          newValue = await Promise.all(
-            value.map(async (element) => {
-              if (typeof element === "function") {
-                return await getValueFromFunction(element);
-              }
-              return await getValue(element);
-            })
-          );
-        } else if (typeof value === "function") {
-          newValue = await getValueFromFunction(value);
-          // if an object literal is passed in, traverse deeper into it
-        } else if (
-          Object.prototype.toString.call(value) === "[object Object]"
-        ) {
-          const finalKey = parentKey ? `${parentKey}.${key}` : key;
-          return await walk(record, value, finalKey);
-        }
+    const resolve = async (value) => {
+      if (value instanceof Factory) {
+        return makeRelation(value.name);
+      } else if (Array.isArray(value)) {
+        return Promise.all(
+          value.map(async (entity) => {
+            return resolve(entity);
+          })
+        );
+      } else if (typeof value === "function") {
+        const api = { sequence: (fn) => fn(factory.sequence) };
+        const fnRes = value.call(extendedAttributes, api, userOptions);
+        return resolve(fnRes);
+        // if an object literal is passed in, traverse deeper into it
+      } else if (Object.prototype.toString.call(value) === "[object Object]") {
+        return build(value);
+      }
 
+      return value;
+    };
+
+    for (const key in object) {
+      result[key] = await resolve(object[key]);
+
+      if (key !== "_id") {
+        // resolve dotted properties
         const modifier = { $set: {} };
+        modifier.$set[key] = result[key];
+        LocalCollection._modify(result, modifier);
+      }
+    }
 
-        if (key !== "_id" || parentKey) {
-          const modifierKey = parentKey ? `${parentKey}.${key}` : key;
-          modifier.$set[modifierKey] = newValue;
-        }
-
-        LocalCollection._modify(record, modifier);
-      })
-    );
+    return result;
   };
-  await walk(result, extendedAttributes);
+
+  const result = await build(extendedAttributes);
 
   if (!options.tree) {
     result._id = extendedAttributes._id || Random.id();
   }
+
   return result;
 };
 
@@ -198,7 +178,7 @@ Factory.build = (name, attributes = {}, userOptions = {}) => {
 };
 
 Factory.buildAsync = async (name, attributes = {}, userOptions = {}) => {
-  return await Factory._buildAsync(name, attributes, userOptions);
+  return Factory._buildAsync(name, attributes, userOptions);
 };
 
 Factory.tree = (name, attributes, userOptions = {}) => {
@@ -244,8 +224,8 @@ Factory.createAsync = async (name, attributes = {}, userOptions = {}) => {
   });
   const record = await Factory._createAsync(name, doc);
   await Promise.all(
-    Factory.get(name).afterHooks.map(async (cb) => {
-      return await cb(record);
+    Factory.get(name).afterHooks.map((cb) => {
+      return cb(record);
     })
   );
 
