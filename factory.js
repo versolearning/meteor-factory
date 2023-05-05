@@ -35,7 +35,7 @@ Factory._build = (name, attributes = {}, userOptions = {}, options = {}) => {
   const factory = Factory.get(name);
 
   // "raw" attributes without functions evaluated, or dotted properties resolved
-  const extendedAttributes = { ...factory.attributes, ...attributes };
+  const extendedAttributes = _.extend({}, factory.attributes, attributes);
 
   // either create a new factory and return its _id
   // or return a 'fake' _id (since we're not inserting anything)
@@ -106,7 +106,7 @@ Factory._buildAsync = async (
   const factory = Factory.get(name);
 
   // "raw" attributes without functions evaluated, or dotted properties resolved
-  const extendedAttributes = { ...factory.attributes, ...attributes };
+  const extendedAttributes = _.extend({}, factory.attributes, attributes);
 
   // either create a new factory and return its _id
   // or return a 'fake' _id (since we're not inserting anything)
