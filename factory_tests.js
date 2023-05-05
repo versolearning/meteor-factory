@@ -1030,3 +1030,29 @@ Tinytest.addAsync(
     test.equal(book.object, undefined);
   }
 );
+
+Tinytest.add(
+  "Factory (sync) - Define - Deeply nested reference in array of objects",
+  (test) => {
+    Factory.define("author", Authors, { name: "John Smith" });
+    Factory.define("book", Books, { links: [{ _id: Factory.get("author") }] });
+
+    const book = Factory.create("book");
+    const author = Authors.findOne(book.links[0]._id);
+
+    test.equal(book.links[0]._id, author._id);
+  }
+);
+
+Tinytest.addAsync(
+  "Factory (async) - Define - Deeply nested reference in array of objects",
+  async (test) => {
+    Factory.define("author", Authors, { name: "John Smith" });
+    Factory.define("book", Books, { links: [{ _id: Factory.get("author") }] });
+
+    const book = await Factory.createAsync("book");
+    const author = Authors.findOne(book.links[0]._id);
+
+    test.equal(book.links[0]._id, author._id);
+  }
+);
