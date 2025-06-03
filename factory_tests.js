@@ -887,6 +887,17 @@ Tinytest.addAsync(
 );
 
 Tinytest.addAsync(
+  "Factory (async) - Create - Nested _id field override",
+  async (test) => {
+    Factory.define("bookWithAuthor", Books, { authorLink: { _id: "test" } });
+
+    const book = await Factory.createAsync("bookWithAuthor");
+
+    test.equal(book.authorLink._id, "test");
+  }
+);
+
+Tinytest.addAsync(
   "Factory (async) - Create - Nested relationship",
   async (test) => {
     Factory.define("author", Authors, {
